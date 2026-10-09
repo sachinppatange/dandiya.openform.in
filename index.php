@@ -26,6 +26,13 @@ if (is_staff_logged_in() && !is_student_logged_in() && empty($_SESSION['admin_au
     header('Location: staff/dashboard.php');
     exit;
 }
+if (!is_form_user_logged_in()) {
+    require_once __DIR__ . '/includes/app_settings.php';
+    $dest = landing_is_enabled() ? 'welcome.php' : 'login.php';
+    $query = (string) ($_SERVER['QUERY_STRING'] ?? '');
+    header('Location: ' . $dest . ($query !== '' ? '?' . $query : ''));
+    exit;
+}
 require_form_login();
 capture_staff_referral();
 $formUser = get_form_user();

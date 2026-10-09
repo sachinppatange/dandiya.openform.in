@@ -409,11 +409,11 @@ $posterSrc = landing_poster_src('../');
     <p class="hint-block">Colleges are edited under <a href="colleges.php">Colleges</a>. The entry fee is on the Razorpay / fees tab. Paid guests get a participant number automatically; print the 3 × 3 inch cards from <a href="participant_cards.php">Participant cards</a>.</p>
     <label class="declaration-check" style="margin:0 0 10px;display:flex;gap:8px;align-items:center;">
       <input type="checkbox" name="landing_enabled" value="1" <?php echo ($settings['landing_enabled'] ?? '1') !== '0' ? 'checked' : ''; ?>>
-      <span>Show landing page (off = go straight to login)</span>
+      <span>Show the event page before login (off = open the login form directly)</span>
     </label>
     <label class="declaration-check" style="margin:0 0 14px;display:flex;gap:8px;align-items:center;">
       <input type="checkbox" name="landing_show_fees" value="1" <?php echo ($settings['landing_show_fees'] ?? '1') !== '0' ? 'checked' : ''; ?>>
-      <span>Show fee cards on the landing page</span>
+      <span>Show the entry fee on the event page</span>
     </label>
     <div class="settings-grid">
       <div class="field">

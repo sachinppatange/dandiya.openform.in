@@ -129,14 +129,34 @@ if ($otp_active && !empty($ctx['last_sent_at'])) {
     $cooldownRemaining = max(0, OTP_RESEND_COOLDOWN - (time() - (int) $ctx['last_sent_at']));
 }
 
-$page_title = function_exists('landing_page_title') ? landing_page_title() : 'SVSS Dandiya Night';
+if (!function_exists('landing_page_title')) {
+    require_once __DIR__ . '/includes/app_settings.php';
+}
+if (!function_exists('form_workshop_period_label')) {
+    require_once __DIR__ . '/includes/form_catalog.php';
+}
+$page_title = landing_page_title();
 $page_heading = $page_title;
 $page_sub = $lockedStaff
     ? 'Form via ' . $lockedStaff['name'] . '. Enter mobile number for SMS OTP.'
     : 'Enter your mobile number to register. Your pass number and ticket open after payment.';
+$show_program_info = landing_is_enabled();
+$program_facts = [];
+if ($show_program_info) {
+    $when = form_workshop_period_label();
+    $venue = trim((string) strtok(form_event_venue_label(), "\r\n"));
+    if ($when !== '') {
+        $program_facts[] = ['When', $when];
+    }
+    if ($venue !== '') {
+        $program_facts[] = ['Where', $venue];
+    }
+    if (landing_show_fees()) {
+        $program_facts[] = ['Fee', landing_entry_fee()['label']];
+    }
+}
 $phone_label = 'Mobile number*';
 $note_text = 'First login creates your profile. Username = mobile, password = SMS OTP.';
-$show_program_info = false;
 $extra_links = '<a href="staff/login.php">Staff Login</a>';
 $staff_ref = (string) ($_SESSION['staff_ref'] ?? '');
 $otp_length = (int) OTP_LENGTH;

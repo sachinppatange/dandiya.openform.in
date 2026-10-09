@@ -841,6 +841,28 @@ function landing_is_enabled(): bool
     return get_app_setting('landing_enabled', '1') !== '0';
 }
 
+function landing_show_fees(): bool
+{
+    return get_app_setting('landing_show_fees', '1') !== '0';
+}
+
+function landing_entry_fee(): array
+{
+    $s = function_exists('get_app_settings') ? get_app_settings() : [];
+    $base = max(0, (float) ($s['exam_fee_flat'] ?? 300));
+    $pct = max(0, min(30, (float) ($s['platform_fee_percent'] ?? 0)));
+    $payer = (($s['platform_fee_payer'] ?? 'user') === 'admin') ? 'admin' : 'user';
+    $platform = round($base * $pct / 100, 2);
+    $total = $payer === 'admin' ? $base : round($base + $platform, 2);
+    return [
+        'base' => $base,
+        'platform' => $platform,
+        'total' => $total,
+        'payer' => $payer,
+        'label' => '₹' . number_format($total, ((float) (int) $total) === $total ? 0 : 2),
+    ];
+}
+
 function landing_lines(string $key): array
 {
     $text = (string) get_app_setting($key, '');

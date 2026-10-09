@@ -88,11 +88,10 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         <div class="sub"><?php echo htmlspecialchars($page_sub); ?></div>
         <?php if (!empty($show_program_info)): ?>
             <div class="program">
-                <?php echo htmlspecialchars(landing_page_title()); ?>
-                <?php if (landing_page_subtitle() !== ''): ?>
-                    <br><span style="font-weight:500;opacity:.9;"><?php echo htmlspecialchars(landing_page_subtitle()); ?></span>
-                <?php endif; ?>
-                <br><a href="welcome.php<?php echo $staff_ref ? ('?ref=' . urlencode((string) $staff_ref)) : ''; ?>">Read full details</a>
+                <?php foreach (($program_facts ?? []) as $fact): ?>
+                    <div><b><?php echo htmlspecialchars((string) $fact[0]); ?>:</b> <?php echo htmlspecialchars((string) $fact[1]); ?></div>
+                <?php endforeach; ?>
+                <a href="welcome.php<?php echo $staff_ref ? ('?ref=' . urlencode((string) $staff_ref)) : ''; ?>">Event details</a>
             </div>
         <?php endif; ?>
         <?php if ($allow_password_login): ?>
