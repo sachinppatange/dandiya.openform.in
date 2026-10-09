@@ -110,6 +110,8 @@ $qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&margin=
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Payment Receipt - <?php echo htmlspecialchars($landingTitle); ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -122,21 +124,23 @@ $qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&margin=
 <style>
 /* Screen View CSS */
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fff;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    color: #172033;
     padding: 20px;
 }
 .receipt-container {
     max-width: 800px;
     margin: 0 auto;
     background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    border-radius: 22px;
+    border: 1px solid #eef1f6;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, .08);
     overflow: hidden;
 }
 .receipt-header {
-    background: linear-gradient(135deg, #0058F0 0%, #0046C7 100%);
-    color: #ffffff;
+    background: #fff;
+    color: #1d2a6b;
     padding: 20px;
     text-align: center;
     position: relative;
@@ -160,13 +164,15 @@ body {
     padding: 8px;
 }
 .receipt-title {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.35rem;
+    font-weight: 800;
     margin: 0;
-    letter-spacing: 0.3px;
+    letter-spacing: -0.03em;
     line-height: 1.35;
+    color: #1d2a6b;
     text-transform: none;
 }
+.receipt-subtitle { color: #5b6b86; }
 .receipt-subtitle {
     font-size: 0.95rem;
     margin-top: 5px;
@@ -223,10 +229,10 @@ body {
 .section-title {
     font-size: 1rem;
     font-weight: 700;
-    color: #0058F0;
+    color: #1d3fbf;
     margin: 15px 0 10px 0;
     padding-bottom: 6px;
-    border-bottom: 2px solid #0058F0;
+    border-bottom: 3px solid #d4a24a;
 }
 .detail-box {
     background: #ffffff;
@@ -254,7 +260,7 @@ body {
     color: #212529;
 }
 .fee-highlight {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: #1d2a6b;
     color: #ffffff;
     padding: 12px;
     border-radius: 8px;
@@ -322,11 +328,13 @@ body {
     gap: 15px;
     margin-top: 20px;
 }
+.action-buttons .btn { border-radius: 999px; font-weight: 700; }
+.action-buttons .btn-primary { background: #6d78e6; border-color: #6d78e6; }
 .btn-print, .btn-download, .btn-home {
     flex: 1;
     padding: 10px;
-    font-weight: 600;
-    border-radius: 6px;
+    font-weight: 700;
+    border-radius: 999px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-size: 0.85rem;
@@ -366,7 +374,7 @@ body {
     display: flex;
     gap: 16px;
     align-items: center;
-    border: 2px dashed #0058F0;
+    border: 2px dashed #d4a24a;
     border-radius: 12px;
     padding: 14px;
     margin: 12px 0 18px;

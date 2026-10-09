@@ -395,6 +395,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
     <?php endif; ?>
     
     <!-- Custom Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/theme.css?v=2">
     <style>
         * {
@@ -805,28 +807,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             }
         }
     </style>
+    <link rel="stylesheet" href="assets/css/guest.css?v=1">
 </head>
 
-<body>
-
-<div class="user-bar">
-    <div class="container user-bar-inner">
-        <div>
-            Logged in:
-            <strong><?php echo htmlspecialchars($formUser['name'] ?: 'Student'); ?></strong>
-            (<?php echo htmlspecialchars($formUser['type'] === 'admin' ? 'Admin' : 'Student'); ?>
-            · +91 <?php echo htmlspecialchars(local_10_digit($formUser['phone'])); ?>)
-        </div>
-        <div class="user-nav">
+<body class="guest">
+<?php
+$guestKicker = '';
+$guestAccent = $landingTitle;
+if (preg_match('/^SVSS\s+(.+)$/iu', $landingTitle, $guestTitleParts)) {
+    $guestKicker = 'SVSS';
+    $guestAccent = $guestTitleParts[1];
+}
+$guestLogo = function_exists('panel_logo_src') ? panel_logo_src('') : '';
+?>
+<div class="guest-blob" aria-hidden="true"></div>
+<header class="guest-top">
+    <div class="guest-top-in">
+        <a class="guest-brand" href="index.php">
+            <?php if ($guestLogo !== ''): ?><span class="guest-crest"><img src="<?php echo htmlspecialchars($guestLogo); ?>" alt=""></span><?php endif; ?>
+            <span class="guest-word"><?php if ($guestKicker !== ''): ?><?php echo htmlspecialchars($guestKicker); ?> <?php endif; ?><span><?php echo htmlspecialchars($guestAccent); ?></span></span>
+        </a>
+        <nav class="guest-nav">
             <a href="my_registrations.php">My registrations</a>
             <a class="on" href="index.php">Registration form</a>
             <?php if (function_exists('help_whatsapp_url') && help_whatsapp_url() !== ''): ?>
             <a href="<?php echo htmlspecialchars(help_whatsapp_url()); ?>" target="_blank" rel="noopener">Help</a>
             <?php endif; ?>
             <a href="<?php echo $formUser['type'] === 'admin' ? 'adminpanel/admin_logout.php' : 'student_logout.php'; ?>">Logout</a>
-        </div>
+        </nav>
     </div>
-</div>
+    <div class="guest-who">Logged in as <?php echo htmlspecialchars($formUser['name'] ?: 'Guest'); ?> · +91 <?php echo htmlspecialchars(local_10_digit($formUser['phone'])); ?></div>
+</header>
 
 <!-- Test Mode Banner -->
 <?php if (TEST_MODE): ?>
@@ -837,22 +848,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
     </div>
 </div>
 <?php endif; ?>
-
-<!-- Header -->
-<div class="header text-center">
-    <div class="container">
-        <img src="<?php echo htmlspecialchars(panel_logo_src('')); ?>" class="logo mb-2" alt="">
-        <h4 class="mb-0">
-            <?php echo htmlspecialchars($landingTitle); ?>
-        </h4>
-        <?php if ($landingSubtitle !== ''): ?>
-        <p class="mb-0 mt-2" style="font-size:0.95rem;opacity:.9;"><?php echo htmlspecialchars($landingSubtitle); ?></p>
-        <?php endif; ?>
-        <?php if (TEST_MODE): ?>
-        <small class="text-danger fw-bold">[TEST MODE]</small>
-        <?php endif; ?>
-    </div>
-</div>
 
 <!-- Main Content -->
 <div class="container py-5">
@@ -889,7 +884,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             <!-- =============================================== -->
             <div class="card shadow">
                 <div class="card-body p-4">
-                    
+                    <div class="guest-steps" aria-label="Progress">
+                        <span class="done">1 · Details</span>
+                        <span class="on">2 · Review and pay</span>
+                    </div>
                     <div class="confirmation-section">
                         
                         <div class="confirmation-header">
@@ -1058,7 +1056,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                     "class": "<?php echo $applicationData['class']; ?>"
                 },
                 "theme": {
-                    "color": "#0058F0"
+                    "color": "#6d78e6"
                 },
                 "modal": {
                     "ondismiss": function() {
@@ -1093,9 +1091,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             <!-- =============================================== -->
             <div class="card shadow">
                 <div class="card-body p-4">
-                    
-                    <!-- INSTRUCTIONS BOX -->
-                    
+                    <div class="guest-intro">
+                        <h1>Register</h1>
+                        <div class="goldbar"></div>
+                    </div>
+                    <div class="guest-steps" aria-label="Progress">
+                        <span class="on">1 · Details</span>
+                        <span>2 · Review and pay</span>
+                    </div>
                     <?php if (TEST_MODE): ?>
                     <div class="alert alert-warning">
                         <strong>⚠️ TEST MODE ACTIVE</strong><br>
@@ -1234,8 +1237,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         
                         <div class="d-grid mt-4">
                             <button type="submit" name="submit" class="btn btn-primary btn-lg">
-                                Submit Application<?php echo TEST_MODE ? ' (Test Mode)' : ''; ?> →
+                                Continue to payment<?php echo TEST_MODE ? ' (Test Mode)' : ''; ?>
                             </button>
+                            <p class="next-note">Next you check the details, then pay. The pass and ticket open after payment.</p>
                         </div>
                         
                     </form>
@@ -1323,6 +1327,5 @@ if (applicationForm) {
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<?php if (function_exists('help_whatsapp_button')) { echo help_whatsapp_button(true); } ?>
 </body>
 </html>

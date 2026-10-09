@@ -51,34 +51,49 @@ $sections = [
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo htmlspecialchars($title); ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/theme.css?v=2">
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; }
-  .top { background: linear-gradient(135deg, var(--brand), var(--brand-deep)); color: #fff; padding: 28px 16px 22px; }
+  body { margin: 0; background: #fff; color: #172033; font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
+  .top { padding: 36px 16px 8px; }
   .top-in, .wrap { max-width: 720px; margin: 0 auto; }
-  .top h1 { margin: 0; font-size: 1.7rem; }
-  .top p { margin: 8px 0 0; opacity: .92; }
-  .wrap { padding: 16px 16px 40px; }
-  .poster { display: block; width: 100%; border-radius: 16px; margin-top: -28px; background: #fff; box-shadow: var(--shadow); }
+  .top h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -.03em; color: #1d2a6b; }
+  .top h1 span { color: #c23b55; }
+  .goldbar { width: 64px; height: 4px; border-radius: 99px; background: #d4a24a; margin: 12px 0 0; }
+  .top p { margin: 10px 0 0; color: #3d4a60; font-weight: 600; }
+  .wrap { padding: 16px 16px 48px; }
+  .poster { display: block; width: 100%; max-height: 520px; object-fit: contain; border-radius: 18px; background: #f8fafc; box-shadow: 0 14px 36px rgba(15,23,42,.1); }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
-  .chips span { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; font-size: 13px; font-weight: 700; }
-  .fee { background: #fff; border-radius: 16px; box-shadow: var(--shadow); padding: 16px; display: flex; justify-content: space-between; gap: 12px; align-items: center; margin: 14px 0; }
-  .fee b { display: block; font-size: 1.6rem; color: var(--brand); }
-  .fee small { color: var(--muted); font-weight: 600; }
-  .card { background: #fff; border-radius: 16px; box-shadow: var(--shadow); padding: 16px; margin-top: 12px; }
-  .card h2 { margin: 0 0 8px; font-size: 1.05rem; color: var(--brand); }
+  .chips span { background: #f4f6fb; border-radius: 999px; padding: 6px 10px; font-size: 13px; font-weight: 700; color: #24356b; }
+  .fee { background: #fff; border: 1px solid #eef1f6; border-radius: 18px; box-shadow: 0 12px 32px rgba(15,23,42,.06); padding: 16px; display: flex; justify-content: space-between; gap: 12px; align-items: center; margin: 14px 0; }
+  .fee b { display: block; font-size: 1.6rem; color: #1d3fbf; }
+  .fee small { color: #5b6b86; font-weight: 600; }
+  .card { background: #fff; border: 1px solid #eef1f6; border-radius: 18px; box-shadow: 0 12px 32px rgba(15,23,42,.05); padding: 16px; margin-top: 12px; }
+  .card h2 { margin: 0 0 8px; font-size: 1.05rem; color: #1d3fbf; }
   .card p { margin: 0 0 8px; line-height: 1.5; }
   .card ul { margin: 0; padding-left: 18px; }
   .card li { margin: 4px 0; }
-  .cta { display: block; text-align: center; background: var(--brand); color: #fff; text-decoration: none; font-weight: 800; border-radius: 14px; padding: 14px 16px; margin-top: 16px; }
-  .cta.ghost { background: #fff; color: var(--brand); border: 1px solid var(--line); margin-top: 8px; }
+  .cta { display: block; text-align: center; background: #6d78e6; color: #fff; text-decoration: none; font-weight: 800; border-radius: 999px; padding: 14px 16px; margin-top: 16px; }
+  .cta.ghost { background: #fff; color: #1d3fbf; border: 1px solid #e4e8ef; margin-top: 8px; }
+  @media (max-width: 760px) {
+    .top h1 { font-size: 1.55rem; }
+    .poster { max-height: 280px; }
+  }
 </style>
 </head>
 <body>
 <header class="top">
   <div class="top-in">
-    <h1><?php echo htmlspecialchars($title); ?></h1>
+    <h1><?php
+      if (preg_match('/^SVSS\s+(.+)$/iu', $title, $titleParts)) {
+          echo htmlspecialchars('SVSS ') . '<span>' . htmlspecialchars($titleParts[1]) . '</span>';
+      } else {
+          echo htmlspecialchars($title);
+      }
+    ?></h1>
+    <div class="goldbar"></div>
     <?php if ($subtitle !== ''): ?><p><?php echo htmlspecialchars($subtitle); ?></p><?php endif; ?>
   </div>
 </header>

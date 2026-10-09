@@ -1,0 +1,346 @@
+/* Guest registration pages. Same visual language as the login screen. */
+body.guest,
+body.guest-account {
+  background: #fff;
+  color: #172033;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body.guest .guest-blob,
+body.guest-account .guest-blob {
+  position: fixed;
+  left: -8vw;
+  bottom: -28vh;
+  width: 38vw;
+  height: 34vh;
+  background: #1d4ed8;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+body.guest .guest-top,
+body.guest-account .guest-top,
+body.guest .container,
+body.guest-account .wrap,
+body.guest .footer {
+  position: relative;
+  z-index: 1;
+}
+body.guest .guest-top,
+body.guest-account .guest-top {
+  background: #fff;
+  border-bottom: 1px solid #eef1f6;
+  padding: 14px 20px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+body.guest .guest-top-in,
+body.guest-account .guest-top-in {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+body.guest .guest-brand,
+body.guest-account .guest-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+}
+body.guest .guest-crest,
+body.guest-account .guest-crest {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #c6a15b;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex: 0 0 52px;
+}
+body.guest .guest-crest img,
+body.guest-account .guest-crest img {
+  width: 74%;
+  height: 74%;
+  object-fit: contain;
+}
+body.guest .guest-word,
+body.guest-account .guest-word {
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -.03em;
+  color: #1d2a6b;
+  line-height: 1.15;
+}
+body.guest .guest-word span,
+body.guest-account .guest-word span { color: #c23b55; }
+body.guest .guest-who,
+body.guest-account .guest-who {
+  max-width: 1040px;
+  margin: 8px auto 0;
+  color: #5b6b86;
+  font-size: 13px;
+  font-weight: 600;
+}
+body.guest .guest-nav,
+body.guest-account .guest-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+body.guest .guest-nav a,
+body.guest-account .guest-nav a {
+  color: #24356b;
+  background: #f4f6fb;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+body.guest .guest-nav a.on,
+body.guest-account .guest-nav a.on {
+  background: #6d78e6;
+  color: #fff;
+}
+body.guest .guest-intro {
+  text-align: center;
+  margin: 8px 0 18px;
+}
+body.guest .guest-intro h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #1d3fbf;
+}
+body.guest .goldbar {
+  width: 64px;
+  height: 4px;
+  border-radius: 99px;
+  background: #d4a24a;
+  margin: 10px auto 0;
+}
+body.guest .guest-steps {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+body.guest .guest-steps span {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5b6b86;
+  background: #f4f6fb;
+  border-radius: 999px;
+  padding: 8px 10px;
+}
+body.guest .guest-steps span.on {
+  background: #1d2a6b;
+  color: #fff;
+}
+body.guest .guest-steps span.done {
+  background: #e8f6ee;
+  color: #0f9d58;
+}
+body.guest .container.py-5 { padding-top: 28px !important; padding-bottom: 48px !important; }
+body.guest .card {
+  border: 1px solid #eef1f6 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, .08) !important;
+}
+body.guest .section-title {
+  color: #1d3fbf;
+  border-bottom: 3px solid #d4a24a;
+  font-size: 1.05rem;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+body.guest .form-label { color: #24356b; font-weight: 700; }
+body.guest .form-control,
+body.guest .form-select {
+  border: 1px solid #e4e8ef;
+  border-radius: 12px;
+  min-height: 48px;
+  font-size: 16px;
+  padding: 10px 14px;
+}
+body.guest .form-control:focus,
+body.guest .form-select:focus {
+  border-color: #6d78e6;
+  box-shadow: 0 0 0 4px rgba(109, 120, 230, .16);
+}
+body.guest .btn-primary,
+body.guest .btn-payment {
+  background: #6d78e6 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-weight: 700;
+  padding: 14px 18px;
+  box-shadow: none !important;
+}
+body.guest .btn-primary:hover,
+body.guest .btn-payment:hover { background: #5b66d6 !important; color: #fff; }
+body.guest .btn-edit {
+  background: #fff;
+  color: #24356b;
+  border: 1px solid #e4e8ef;
+  border-radius: 999px;
+  font-weight: 700;
+}
+body.guest .btn-edit:hover { background: #f4f6fb; color: #1d2a6b; }
+body.guest .btn-outline-primary {
+  border-radius: 999px;
+  border-color: #6d78e6;
+  color: #1d3fbf;
+  font-weight: 700;
+}
+body.guest .declaration-box {
+  background: #f8fafc;
+  border: 1px solid #eef1f6;
+  border-radius: 16px;
+}
+body.guest .declaration-box p,
+body.guest .declaration-links a { color: #1d3fbf; }
+body.guest .fee-highlight {
+  background: #1d2a6b;
+  border-radius: 16px;
+  box-shadow: none;
+}
+body.guest .confirmation-section {
+  background: #fff;
+  border: 0;
+  padding: 0;
+}
+body.guest .confirmation-header { border-bottom: 0; margin-bottom: 8px; }
+body.guest .confirmation-header h4,
+body.guest .detail-group-title { color: #1d3fbf; }
+body.guest .detail-group {
+  border: 1px solid #eef1f6;
+  box-shadow: none;
+  border-radius: 16px;
+}
+body.guest .error-message { border-radius: 16px; }
+body.guest .alert { border-radius: 16px; }
+body.guest .footer {
+  background: transparent;
+  color: #5b6b86;
+  padding: 8px 0 36px;
+  margin-top: 0;
+}
+body.guest .next-note {
+  text-align: center;
+  color: #5b6b86;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 10px 0 0;
+}
+
+body.guest-account .wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 72px; }
+body.guest-account .card {
+  background: #fff;
+  border: 1px solid #eef1f6;
+  border-radius: 22px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, .08);
+  padding: 18px;
+  margin-bottom: 14px;
+}
+body.guest-account .card h2 { margin: 0 0 8px; font-size: 1.2rem; color: #1d3fbf; }
+body.guest-account .muted { color: #5b6b86; font-size: 13px; font-weight: 600; }
+body.guest-account .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #6d78e6;
+  color: #fff;
+  text-decoration: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 14px;
+}
+body.guest-account .btn.gray { background: #eef1f6; color: #24356b; }
+body.guest-account .btn.green { background: #0f9d58; }
+body.guest-account .btn.orange { background: #1d2a6b; }
+body.guest-account .btn.block { display: flex; width: 100%; margin-top: 8px; }
+body.guest-account .grid { display: grid; gap: 8px; }
+body.guest-account .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+body.guest-account .reg {
+  background: #fff;
+  border: 1px solid #eef1f6;
+  border-radius: 18px;
+  padding: 14px;
+  margin-top: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .04);
+}
+body.guest-account .reg b { display: block; font-size: 16px; margin-top: 6px; }
+body.guest-account .badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+body.guest-account .badge.paid { background: #e8f6ee; color: #0f9d58; }
+body.guest-account .badge.pending { background: #fff4e5; color: #c56a00; }
+body.guest-account .badge.failed { background: #fdecea; color: #c62828; }
+body.guest-account .st {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef1f6;
+  font-size: 14px;
+}
+body.guest-account .st:last-child { border: 0; }
+body.guest-account .help {
+  background: #fff7ed;
+  color: #9a3412;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+body.guest-account input[type="file"] {
+  width: 100%;
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+@media (max-width: 760px) {
+  body.guest .guest-blob,
+  body.guest-account .guest-blob { width: 70vw; height: 18vh; left: -24vw; bottom: -10vh; }
+  body.guest .guest-top,
+  body.guest-account .guest-top { padding: 12px 14px; }
+  body.guest .guest-top-in,
+  body.guest-account .guest-top-in { flex-direction: column; align-items: stretch; }
+  body.guest .guest-nav,
+  body.guest-account .guest-nav { justify-content: flex-start; }
+  body.guest .guest-word,
+  body.guest-account .guest-word { font-size: 1rem; }
+  body.guest .guest-intro h1 { font-size: 1.35rem; }
+  body.guest .card-body { padding: 16px !important; }
+  body.guest .detail-row { flex-direction: column; gap: 2px; }
+  body.guest .detail-label { min-width: 0; }
+  body.guest .d-flex.gap-3 { flex-direction: column; }
+  body.guest-account .actions { grid-template-columns: 1fr; }
+}
+@media print {
+  body.guest-account .guest-top,
+  body.guest-account .guest-blob,
+  body.guest-account .no-print { display: none !important; }
+  body.guest-account { background: #fff; }
+}

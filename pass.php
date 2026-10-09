@@ -76,10 +76,10 @@ $loginHint = $operator ? '' : 'Staff / admin login is required to mark entry and
 <style>
 :root { --blue:#0058F0; --orange:#3D7FFF; --ok:#0F9D58; --line:#D7E3F7; }
 *{box-sizing:border-box}
-body{margin:0;background:#eef3f8;font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:#122}
+body{margin:0;background:#fff;font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:#172033}
 .wrap{max-width:520px;margin:0 auto;padding:16px 14px 40px}
-.card{background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(13,59,140,.12);overflow:hidden;margin-bottom:14px}
-.icard-top{background:linear-gradient(135deg,#0058F0,#0039A6);color:#fff;padding:16px 18px;display:flex;gap:12px;align-items:center}
+.card{background:#fff;border:1px solid #eef1f6;border-radius:22px;box-shadow:0 18px 50px rgba(15,23,42,.08);overflow:hidden;margin-bottom:14px}
+.icard-top{background:#fff;color:#1d2a6b;padding:16px 18px;display:flex;gap:12px;align-items:center;border-bottom:3px solid #d4a24a}
 .icard-top img{width:48px;height:48px;border-radius:10px;background:#fff;object-fit:contain}
 .icard-top img.face{width:64px;height:64px;object-fit:cover;margin-left:auto;border:2px solid #fff}
 .icard-top small{opacity:.85;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:10px}
@@ -91,7 +91,7 @@ body{margin:0;background:#eef3f8;font-family:"Plus Jakarta Sans",system-ui,sans-
 .meta b{font-size:14px}
 .row{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 .row:last-child{border:0}
-.group-title{margin:16px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#0058F0}
+.group-title{margin:16px 0 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#1d3fbf}
 .dl{margin:0}
 .dl div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 .dl dt{color:#5c6b7a;font-weight:700;min-width:130px}
@@ -107,8 +107,8 @@ body{margin:0;background:#eef3f8;font-family:"Plus Jakarta Sans",system-ui,sans-
 .badge{font-size:11px;font-weight:800;padding:4px 8px;border-radius:999px;background:#eee}
 .st.done .badge{background:#1a7f4c;color:#fff}
 form.inline{margin:0}
-button,a.btn{border:0;border-radius:9px;padding:8px 12px;font-weight:800;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-block}
-.mark{background:var(--blue);color:#fff}
+button,a.btn{border:0;border-radius:999px;padding:10px 14px;font-weight:800;font-family:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.mark{background:#6d78e6;color:#fff}
 .undo{background:#fff;color:#c62828;border:1px solid #f3c4c4}
 .flash{background:#e8f6ee;color:#1a7f4c;padding:10px 12px;border-radius:10px;font-weight:700;margin-bottom:10px}
 .err{background:#fdecea;color:#c62828;padding:10px 12px;border-radius:10px;font-weight:700;margin-bottom:10px}

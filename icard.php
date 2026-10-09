@@ -24,7 +24,7 @@ $code = event_application_code((int) $app['id']);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ticket · <?php echo htmlspecialchars($code); ?></title>
 <style>
-body{margin:0;background:#f6efe6;padding:18px}
+body{margin:0;background:#fff;padding:18px;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
 </style>
 </head>
 <body>

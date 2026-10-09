@@ -34,12 +34,12 @@ $when = date('d F Y', strtotime((string) $checkins['entry']['checked_in_at']));
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>E-Certificate · <?php echo htmlspecialchars($fullName); ?></title>
 <style>
-body{margin:0;background:#eef3f8;font-family:Georgia,serif;padding:16px}
-.sheet{max-width:720px;margin:0 auto;background:#fff;border:12px solid #0058F0;padding:28px 24px;text-align:center}
+body{margin:0;background:#fff;font-family:Georgia,serif;padding:16px}
+.sheet{max-width:720px;margin:0 auto;background:#fff;border:12px solid #1d2a6b;outline:3px solid #d4a24a;outline-offset:-18px;padding:28px 24px;text-align:center}
 .sheet img{height:64px}
-h1{color:#0058F0;font-size:1.6rem;margin:12px 0 4px}
-.name{font-size:1.8rem;margin:16px 0;color:#0058F0}
-.btn{display:inline-block;margin-top:16px;background:#0058F0;color:#fff;text-decoration:none;padding:10px 16px;border-radius:8px;font-family:system-ui,sans-serif;font-weight:700;border:0;cursor:pointer}
+h1{color:#1d2a6b;font-size:1.6rem;margin:12px 0 4px}
+.name{font-size:1.8rem;margin:16px 0;color:#c23b55}
+.btn{display:inline-block;margin-top:16px;background:#6d78e6;color:#fff;text-decoration:none;padding:12px 18px;border-radius:999px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:700;border:0;cursor:pointer}
 @media print{.btn{display:none}body{background:#fff;padding:0}}
 </style>
 </head>
