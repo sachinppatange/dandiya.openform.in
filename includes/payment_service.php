@@ -153,6 +153,10 @@ function mark_application_paid(array $app, string $paymentId, string $signature 
 
     if (!$wasPaid) {
         send_paid_email_if_needed($app);
+        if (!function_exists('participant_assign_paid')) {
+            require_once __DIR__ . '/participant_cards.php';
+        }
+        participant_assign_paid();
     }
 
     return [

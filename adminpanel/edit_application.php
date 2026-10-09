@@ -113,6 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_application'])
             ]);
             
             if ($result) {
+                if ($payment_status === 'paid' && function_exists('participant_assign_paid') === false) {
+                    require_once __DIR__ . '/../includes/participant_cards.php';
+                }
+                if ($payment_status === 'paid') {
+                    participant_assign_paid();
+                }
                 $msg_success = 'Application updated successfully!';
             } else {
                 $msg_error = 'Failed to update application.';

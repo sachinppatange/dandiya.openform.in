@@ -60,6 +60,23 @@ function event_ticket_render(array $app, bool $withActions = true): void
     }
     $token = (string) ($app['receipt_token'] ?? '');
     $code = event_application_code((int) ($app['id'] ?? 0));
+    $participantNo = '';
+    if (($app['payment_status'] ?? '') === 'paid' || !isset($app['payment_status'])) {
+        if (!function_exists('participant_number_label')) {
+            require_once __DIR__ . '/participant_cards.php';
+        }
+        if ((int) ($app['participant_no'] ?? 0) < 1 && (int) ($app['id'] ?? 0) > 0) {
+            participant_assign_paid();
+            try {
+                $stmt = participant_pdo()->prepare('SELECT participant_no FROM scholarship_applications WHERE id = ?');
+                $stmt->execute([(int) $app['id']]);
+                $app['participant_no'] = $stmt->fetchColumn();
+            } catch (Throwable $e) {
+                $app['participant_no'] = 0;
+            }
+        }
+        $participantNo = participant_number_label($app['participant_no'] ?? 0);
+    }
     $name = trim(($app['first_name'] ?? '') . ' ' . ($app['middle_name'] ?? '') . ' ' . ($app['last_name'] ?? ''));
     $type = form_class_label((string) ($app['class'] ?? ''));
     $college = trim((string) ($app['school_name'] ?? ''));
@@ -88,6 +105,9 @@ function event_ticket_render(array $app, bool $withActions = true): void
         </div>
         <div class="dn-name"><?php echo htmlspecialchars($name); ?></div>
         <div class="dn-grid">
+          <?php if ($participantNo !== ''): ?>
+          <div><span>Participant no.</span><b><?php echo htmlspecialchars($participantNo); ?></b></div>
+          <?php endif; ?>
           <div><span>Ticket type</span><b><?php echo htmlspecialchars($type); ?></b></div>
           <div><span>Mobile</span><b><?php echo htmlspecialchars((string) ($app['mobile'] ?? '')); ?></b></div>
           <div><span>College</span><b><?php echo htmlspecialchars($college !== '' ? $college : '—'); ?></b></div>
