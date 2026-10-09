@@ -1,0 +1,25 @@
+:root {
+  --brand: #0058F0;
+  --brand-dark: #0046C7;
+  --brand-deep: #0039A6;
+  --brand-soft: #E8F1FF;
+  --brand-mid: #3D7FFF;
+  --navy: #0058F0;
+  --blue: #0058F0;
+  --blue-2: #0046C7;
+  --primary: #0058F0;
+  --secondary: #3D7FFF;
+  --orange: #0058F0;
+  --orange-2: #3D7FFF;
+  --gold: #3D7FFF;
+  --bg: #F4F7FF;
+  --card: #ffffff;
+  --text: #0B1B33;
+  --muted: #5B6B86;
+  --line: #D7E3F7;
+  --ok: #0F9D58;
+  --warn: #C56A00;
+  --bad: #D93025;
+  --radius: 16px;
+  --shadow: 0 12px 32px rgba(0, 88, 240, .12);
+}

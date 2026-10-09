@@ -1,0 +1,13 @@
+<?php
+/**
+ * Live DB for https://register.openform.in/
+ * Copy this file to db.live.php on the server and paste cPanel MySQL details.
+ * db.live.php is optional — if missing, values in database.php LIVE block are used.
+ */
+return [
+    'host' => 'localhost',
+    'name' => 'openform_register',
+    'user' => 'openform_register',
+    'password' => '',
+    'charset' => 'utf8mb4',
+];
