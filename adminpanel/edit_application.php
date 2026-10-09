@@ -12,6 +12,9 @@ if (!function_exists('form_class_label')) {
     require_once __DIR__ . '/../includes/form_catalog.php';
     ensure_form_catalog_schema();
 }
+if (!function_exists('college_apply_post')) {
+    require_once __DIR__ . '/../includes/colleges.php';
+}
 
 // ========== AUTHENTICATION ==========
 if (empty($_SESSION['admin_auth_user'])) {
@@ -51,16 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_application'])
     $last_name = trim($_POST['last_name'] ?? '');
     $institution_type = 'academia';
     $class = trim($_POST['class'] ?? '');
-    $school_name = trim($_POST['school_name'] ?? '');
+    $errors = [];
+    $school_name = '';
+    $college_id = null;
+    ensure_colleges_schema();
+    $currentCollegeId = 0;
+    try {
+        $cur = $pdo->prepare('SELECT college_id FROM scholarship_applications WHERE id = ?');
+        $cur->execute([$app_id]);
+        $currentCollegeId = (int) ($cur->fetchColumn() ?: 0);
+    } catch (Throwable $e) {
+        $currentCollegeId = 0;
+    }
+    $collegePick = college_apply_post($_POST, $currentCollegeId);
+    if (!$collegePick['ok']) {
+        $errors[] = $collegePick['error'];
+    } else {
+        $school_name = (string) $collegePick['school_name'];
+        $college_id = $collegePick['college_id'];
+    }
     $mobile = trim($_POST['mobile'] ?? '');
     $payment_status = trim($_POST['payment_status'] ?? '');
-    
-    $errors = [];
     
     if (empty($first_name)) $errors[] = "First Name is required";
     if (empty($last_name)) $errors[] = "Last Name is required";
     if (empty($class)) $errors[] = "Ticket type is required";
-    if (empty($school_name)) $errors[] = "College / organisation is required";
     if (!preg_match('/^\d{10}$/', $mobile)) $errors[] = "Valid 10-digit Mobile Number is required";
     
     if (empty($errors)) {
@@ -73,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_application'])
                     last_name = ?,
                     class = ?,
                     school_name = ?,
+                    college_id = ?,
                     mobile = ?,
                     institution_type = ?,
                     payment_status = ?,
@@ -86,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_application'])
                 $last_name,
                 $class,
                 $school_name,
+                $college_id,
                 $mobile,
                 $institution_type,
                 $payment_status,
@@ -425,9 +445,7 @@ function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
                 <div class="section-title">Organisation</div>
                 <div class="form-grid">
                     <div class="form-group full-width">
-                        <label>College / organisation <span class="required">*</span></label>
-                        <input type="hidden" name="institution_type" value="academia">
-                        <input type="text" name="school_name" value="<?php echo h($app['school_name']); ?>" placeholder="Organisation Name / College / University name" required>
+                        <?php college_field((int) ($app['college_id'] ?? 0), (string) ($app['college_other'] ?? ''), (string) ($app['school_name'] ?? '')); ?>
                     </div>
                 </div>
             </div>

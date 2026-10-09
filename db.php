@@ -329,6 +329,7 @@ function save_scholarship_application(PDO $pdo, array $data): int {
         'school_address' => $data['school_address'] ?? '',
         'district' => $data['district'] ?? '',
         'city' => $data['city'] ?? '',
+        'college_id' => isset($data['college_id']) && (int) $data['college_id'] > 0 ? (int) $data['college_id'] : null,
     ];
 
     $includeExtra = true;

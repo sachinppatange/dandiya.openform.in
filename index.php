@@ -34,6 +34,7 @@ $staffOptions = get_active_staff_options();
 
 require_once __DIR__ . '/includes/form_catalog.php';
 require_once __DIR__ . '/includes/coupons.php';
+require_once __DIR__ . '/includes/colleges.php';
 require_once __DIR__ . '/includes/payment_service.php';
 ensure_form_catalog_schema();
 
@@ -110,7 +111,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     $last_name = trim($_POST['last_name'] ?? '');
     $institution_type = 'academia';
     $class = trim($_POST['class'] ?? '');
-    $school_name = trim($_POST['school_name'] ?? '');
+    $school_name = '';
+    $college_id = null;
+    $collegePick = college_apply_post($_POST);
+    if (!$collegePick['ok']) {
+        $errors[] = $collegePick['error'];
+    } else {
+        $school_name = (string) $collegePick['school_name'];
+        $college_id = $collegePick['college_id'];
+    }
     $mobile = local_10_digit((string) ($formUser['phone'] ?? ''));
     $staff_referred = strtolower(trim((string) ($_POST['staff_referred'] ?? '')));
     $staff_id = (int) ($_POST['staff_id'] ?? 0);
@@ -140,10 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         $errors[] = "Last Name is required";
     } elseif (strlen($last_name) < 2) {
         $errors[] = "Last Name must be at least 2 characters";
-    }
-
-    if (empty($school_name) || strlen($school_name) < 3) {
-        $errors[] = "College / organisation is required";
     }
 
     if (!form_valid_class($institution_type, $class)) {
@@ -192,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                 'last_name' => $last_name,
                 'class' => $class,
                 'school_name' => $school_name,
+                'college_id' => $college_id,
                 'mobile' => $mobile,
                 'exam_fee' => $exam_fee,
                 'submitted_by_staff_id' => $staff_id ?: null,
@@ -258,6 +264,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                     'institution_type' => $institution_type,
                     'institution_label' => form_institution_label($institution_type),
                     'school_name' => $school_name,
+                    'college_id' => $college_id,
+                    'college_other' => trim((string) ($_POST['college_other'] ?? '')),
                     'mobile' => $mobile,
                     'exam_fee' => $exam_fee,
                     'fee_base' => $fee_base,
@@ -1097,9 +1105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">College / organisation <span class="text-danger">*</span></label>
-                            <input type="hidden" name="institution_type" value="academia">
-                            <input type="text" name="school_name" id="institutionName" class="form-control" placeholder="College or organisation name" value="<?php echo htmlspecialchars($applicationData['school_name'] ?? ''); ?>" required minlength="3" maxlength="200">
+                            <?php college_field((int) ($applicationData['college_id'] ?? 0), (string) ($applicationData['college_other'] ?? ''), (string) ($applicationData['school_name'] ?? '')); ?>
                         </div>
                         
                         <div class="mb-3">
