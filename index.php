@@ -1133,7 +1133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         </div>
                         <?php if (function_exists('icard_photo_on_form') && icard_photo_on_form()): ?>
                         <div class="mb-3">
-                            <label class="form-label">Photo for Digital I-Card <span class="text-danger">*</span></label>
+                            <label class="form-label">Guest photo <span class="text-danger">*</span></label>
                             <input type="file" name="photo" class="form-control" accept="image/jpeg,image/png,image/webp" required>
                             <small class="text-muted">Clear face photo, JPG/PNG, max 3 MB. You can also add or change it later on My profile.</small>
                         </div>

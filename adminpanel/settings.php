@@ -305,7 +305,7 @@ $v = static function (array $s, string $key): string {
 
 <div class="settings-tabs" role="tablist">
   <a class="<?php echo $tab === 'brand' ? 'active' : ''; ?>" href="settings.php?tab=brand">Logo &amp; branding</a>
-  <a class="<?php echo $tab === 'landing' ? 'active' : ''; ?>" href="settings.php?tab=landing">Registration info</a>
+  <a class="<?php echo $tab === 'landing' ? 'active' : ''; ?>" href="settings.php?tab=landing">Event page</a>
   <a class="<?php echo $tab === 'profile' ? 'active' : ''; ?>" href="settings.php?tab=profile">Admin profile</a>
   <a class="<?php echo $tab === 'payments' ? 'active' : ''; ?>" href="settings.php?tab=payments">Razorpay / fees</a>
   <a class="<?php echo $tab === 'sms' ? 'active' : ''; ?>" href="settings.php?tab=sms">SMS OTP (MSG91)</a>
@@ -377,19 +377,19 @@ $posterSrc = landing_poster_src('../');
   <input type="hidden" name="tab" value="landing">
   <input type="hidden" name="landing_poster_file" value="<?php echo $v($settings, 'landing_poster_file'); ?>">
   <div class="card">
-    <div class="card-head"><h3>Digital I-Card photo</h3></div>
-    <p class="hint-block">My profile always has photo upload, so every I-Card can show a face photo. Use the box below only if you also want the photo on the public registration form.</p>
+    <div class="card-head"><h3>Guest photo</h3></div>
+    <p class="hint-block">The entry ticket uses a QR and the participant number. Leave this off unless you also want every guest to upload a photo on the form.</p>
     <label class="declaration-check" style="margin:0 0 4px;display:flex;gap:8px;align-items:center;">
       <input type="checkbox" name="icard_photo_on_form" value="1" <?php echo ($settings['icard_photo_on_form'] ?? '0') === '1' ? 'checked' : ''; ?>>
-      <span>Ask for I-Card photo on the registration form (required when this is on)</span>
+      <span>Ask for a photo on the registration form</span>
     </label>
   </div>
   <div class="card">
     <div class="card-head"><h3>Staff on registration form</h3></div>
-    <p class="hint-block">When this is on, the form asks “Did someone give this to you?” below the declaration. Yes shows the names from Staff logins.</p>
+    <p class="hint-block">When this is on, the form asks whether someone referred the guest. Yes shows the names from Staff logins.</p>
     <label class="declaration-check" style="margin:0 0 4px;display:flex;gap:8px;align-items:center;">
       <input type="checkbox" name="staff_ask_on_form" value="1" <?php echo ($settings['staff_ask_on_form'] ?? '1') === '1' ? 'checked' : ''; ?>>
-      <span>Ask who referred the participant (Yes / No, then staff names)</span>
+      <span>Ask who referred this guest</span>
     </label>
   </div>
   <div class="card">
@@ -402,10 +402,11 @@ $posterSrc = landing_poster_src('../');
   </div>
   <div class="card">
     <div class="card-head">
-      <h3>Landing page · workshop.openform.in</h3>
-      <a class="btn sm" href="../login.php" target="_blank" rel="noopener">View live page</a>
+      <h3>Event page</h3>
+      <a class="btn sm" href="../index.php" target="_blank" rel="noopener">Open registration form</a>
     </div>
-    <p class="hint-block">This content appears on the public page. Upload a poster or paste a URL. Fee amounts come from the Razorpay tab. One line = one bullet.</p>
+    <p class="hint-block">The title is used on the form, the entry ticket, and the participant cards. The first line of the date is the time shown on the ticket — include the year, for example 17 Oct 2026, 6:00 pm. The venue is printed on the ticket. One line in a box below becomes one bullet.</p>
+    <p class="hint-block">Colleges are edited under <a href="colleges.php">Colleges</a>. The entry fee is on the Razorpay / fees tab. Paid guests get a participant number automatically; print the 3 × 3 inch cards from <a href="participant_cards.php">Participant cards</a>.</p>
     <label class="declaration-check" style="margin:0 0 10px;display:flex;gap:8px;align-items:center;">
       <input type="checkbox" name="landing_enabled" value="1" <?php echo ($settings['landing_enabled'] ?? '1') !== '0' ? 'checked' : ''; ?>>
       <span>Show landing page (off = go straight to login)</span>
@@ -416,20 +417,20 @@ $posterSrc = landing_poster_src('../');
     </label>
     <div class="settings-grid">
       <div class="field">
-        <label for="landing_title">Title</label>
+        <label for="landing_title">Event title</label>
         <input id="landing_title" name="landing_title" maxlength="160" value="<?php echo $v($settings, 'landing_title'); ?>">
       </div>
       <div class="field">
-        <label for="landing_subtitle">Subtitle</label>
+        <label for="landing_subtitle">Line under the title</label>
         <input id="landing_subtitle" name="landing_subtitle" maxlength="240" value="<?php echo $v($settings, 'landing_subtitle'); ?>">
       </div>
       <div class="field">
-        <label for="landing_cta">Button text</label>
-        <input id="landing_cta" name="landing_cta" maxlength="80" value="<?php echo $v($settings, 'landing_cta'); ?>" placeholder="Register / Login">
+        <label for="landing_cta">Register button</label>
+        <input id="landing_cta" name="landing_cta" maxlength="80" value="<?php echo $v($settings, 'landing_cta'); ?>" placeholder="Register for Dandiya Night">
       </div>
       <div class="field">
         <label for="landing_whatsapp">Help / Support WhatsApp (10 digit)</label>
-        <input id="landing_whatsapp" name="landing_whatsapp" maxlength="10" inputmode="numeric" value="<?php echo $v($settings, 'landing_whatsapp'); ?>" placeholder="9420353943">
+        <input id="landing_whatsapp" name="landing_whatsapp" maxlength="10" inputmode="numeric" value="<?php echo $v($settings, 'landing_whatsapp'); ?>" placeholder="9975040405">
         <small>Green Help / Support button on login, form, My forms and receipt. Opens WhatsApp chat.</small>
       </div>
       <div class="field">
@@ -446,17 +447,17 @@ $posterSrc = landing_poster_src('../');
       </div>
     </div>
     <div class="field" style="margin-top:12px;">
-      <label for="landing_venue">Venue / date (small box)</label>
+      <label for="landing_venue">Venue</label>
       <textarea id="landing_venue" name="landing_venue" rows="2"><?php echo $v($settings, 'landing_venue'); ?></textarea>
-      <small>Example: Latur College of Pharmacy, Hasegaon · 28 Sep – 3 Oct 2026</small>
+      <small>Printed on the entry ticket. Example: Latur College of Pharmacy, Hasegaon</small>
     </div>
     <div class="field" style="margin-top:12px;">
-      <label for="landing_highlights">Quick highlights (under the poster)</label>
+      <label for="landing_highlights">Short points under the poster</label>
       <textarea id="landing_highlights" name="landing_highlights" rows="4"><?php echo $v($settings, 'landing_highlights'); ?></textarea>
       <small>One tag per line.</small>
     </div>
     <div class="field" style="margin-top:16px;">
-      <label>Workshop poster</label>
+      <label>Event poster</label>
       <?php if ($posterSrc !== ''): ?>
         <div class="logo-preview-wrap" style="margin:8px 0 12px;">
           <img src="<?php echo htmlspecialchars($posterSrc); ?>" alt="Poster" style="max-width:280px;width:100%;height:auto;border-radius:10px;border:1px solid #e2e8f0;">
@@ -475,24 +476,26 @@ $posterSrc = landing_poster_src('../');
       </label>
     </div>
     <div class="field" style="margin-top:12px;">
-      <label for="landing_about">What are you registering for?</label>
+      <label for="landing_about">About the event</label>
       <textarea id="landing_about" name="landing_about" rows="5"><?php echo $v($settings, 'landing_about'); ?></textarea>
     </div>
     <div class="field" style="margin-top:12px;">
-      <label for="landing_who">Who can apply?</label>
+      <label for="landing_who">Who can register</label>
       <textarea id="landing_who" name="landing_who" rows="4"><?php echo $v($settings, 'landing_who'); ?></textarea>
+      <small>One line each. These are the same people as the ticket types: student, faculty / staff, alumni, guest.</small>
     </div>
     <div class="field" style="margin-top:12px;">
       <label for="landing_how">How to register?</label>
       <textarea id="landing_how" name="landing_how" rows="5"><?php echo $v($settings, 'landing_how'); ?></textarea>
     </div>
     <div class="field" style="margin-top:12px;">
-      <label for="landing_need">What is needed with the application?</label>
+      <label for="landing_need">What the guest fills in</label>
       <textarea id="landing_need" name="landing_need" rows="4"><?php echo $v($settings, 'landing_need'); ?></textarea>
     </div>
     <div class="field" style="margin-top:12px;">
-      <label for="landing_dates">Dates / hall ticket</label>
+      <label for="landing_dates">Date, time and entry notes</label>
       <textarea id="landing_dates" name="landing_dates" rows="4"><?php echo $v($settings, 'landing_dates'); ?></textarea>
+      <small>The first line is the date on the ticket and the year on the participant card. Example: 17 Oct 2026, 6:00 pm</small>
     </div>
     <div class="field" style="margin-top:12px;">
       <label for="landing_helpline">Help / contact</label>
@@ -507,7 +510,7 @@ $posterSrc = landing_poster_src('../');
         <textarea id="legal_checkbox_text" name="legal_checkbox_text" rows="3"><?php echo $v($settings, 'legal_checkbox_text'); ?></textarea>
       </div>
       <div class="field" style="margin-top:12px;">
-        <label for="legal_declaration_html">Participant declaration (HTML)</label>
+        <label for="legal_declaration_html">Guest declaration (HTML)</label>
         <textarea id="legal_declaration_html" name="legal_declaration_html" rows="12"><?php echo $v($settings, 'legal_declaration_html'); ?></textarea>
       </div>
       <div class="field" style="margin-top:12px;">
@@ -526,7 +529,7 @@ $posterSrc = landing_poster_src('../');
       </div>
     </div>
     <div class="settings-actions">
-      <button class="btn gold" type="submit">Save landing page</button>
+      <button class="btn gold" type="submit">Save event page</button>
     </div>
   </div>
 </form>
