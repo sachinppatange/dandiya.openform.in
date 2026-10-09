@@ -12,7 +12,7 @@ $scanBackHref = $scanBackHref ?? 'scan.php';
 
 ensure_event_stations_schema();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $operator && isset($_POST['station'], $_POST['app_id'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && $operator && isset($_POST['station'], $_POST['app_id'])) {
     $appId = (int) $_POST['app_id'];
     $station = (string) $_POST['station'];
     $mark = ($_POST['action'] ?? '') !== 'undo';
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $operator && isset($_POST['station'
 if ($scanQ !== '') {
     $scanApp = event_lookup_application($scanQ);
     if (!$scanApp) {
-        $scanError = 'No registration matched that QR, Application ID, or mobile.';
+        $scanError = 'No registration matched that QR, participant number, pass, or mobile.';
     }
 }
 

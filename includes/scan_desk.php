@@ -1,10 +1,10 @@
 <div class="card">
   <div class="card-head"><h3>Scan registration QR</h3></div>
-  <p class="hint-block">Point the camera at the ticket QR, or type the pass number / mobile. The paid ticket opens below so you can mark entry and wristband.</p>
+  <p class="hint-block">Point the camera at the ticket QR, or type the participant number from the card, the pass (SVSS-DN-00025), or the mobile. Then mark entry and wristband.</p>
   <?php if ($scanMsg): ?><div class="msg info"><?php echo htmlspecialchars($scanMsg); ?></div><?php endif; ?>
   <?php if ($scanError): ?><div class="msg error"><?php echo htmlspecialchars($scanError); ?></div><?php endif; ?>
   <form method="get" class="filters" style="margin-bottom:14px;">
-    <input type="search" name="q" value="<?php echo htmlspecialchars($scanQ); ?>" placeholder="Scan result, AGS00012, or mobile" autofocus>
+    <input type="search" name="q" value="<?php echo htmlspecialchars($scanQ); ?>" placeholder="QR, 025, SVSS-DN-00025, or mobile" autofocus>
     <button class="btn" type="submit">Show registration</button>
     <?php if ($scanApp): ?>
       <a class="btn gray" href="<?php echo htmlspecialchars($scanBackHref); ?>">Scan another</a>
@@ -15,21 +15,42 @@
   <?php endif; ?>
 </div>
 
-<?php if ($scanApp): ?>
+<?php if ($scanApp):
+    $scanParticipant = '';
+    if ($scanStatus === 'paid') {
+        if (!function_exists('participant_number_label')) {
+            require_once __DIR__ . '/participant_cards.php';
+        }
+        $scanParticipant = participant_number_label($scanApp['participant_no'] ?? 0);
+    }
+    $scanCollege = trim((string) ($scanApp['school_name'] ?? ''));
+    $scanTicket = function_exists('form_class_label') ? form_class_label((string) ($scanApp['class'] ?? '')) : (string) ($scanApp['class'] ?? '');
+?>
 <div class="card scan-result">
   <div class="icard-banner">
+    <?php if ($scanParticipant !== ''): ?>
+    <div class="scan-pno">
+      <small>PARTICIPANT NUMBER</small>
+      <?php echo htmlspecialchars($scanParticipant); ?>
+    </div>
+    <?php endif; ?>
     <div>
-      <small>Scanned registration</small>
+      <small>Scanned guest</small>
       <h2><?php echo htmlspecialchars($scanName); ?></h2>
-      <p><?php echo htmlspecialchars($scanCode); ?>
+      <p><?php echo htmlspecialchars($scanCollege !== '' ? $scanCollege : 'College not set'); ?>
+        · <?php echo htmlspecialchars($scanTicket); ?>
+        · <?php echo htmlspecialchars($scanCode); ?>
         · <span class="badge <?php echo htmlspecialchars($scanStatus); ?>"><?php echo htmlspecialchars($scanStatus !== '' ? $scanStatus : 'unknown'); ?></span>
       </p>
+      <?php if (($scanApp['_match'] ?? '') === 'id'): ?>
+      <p>This number matched a registration id. The card number is the participant number, shown after payment.</p>
+      <?php endif; ?>
     </div>
     <div class="scan-result-actions">
       <a class="btn sm gold" href="event_desk.php">Today’s counts</a>
       <?php if ($scanToken !== '' && $scanStatus === 'paid'): ?>
-        <a class="btn sm" href="../payment_success.php?token=<?php echo urlencode($scanToken); ?>" target="_blank">Receipt</a>
-        <a class="btn sm gray" href="../pass.php?t=<?php echo urlencode($scanToken); ?>" target="_blank">Digital I-Card</a>
+        <a class="btn sm" href="../icard.php?token=<?php echo urlencode($scanToken); ?>" target="_blank">Ticket</a>
+        <a class="btn sm gray" href="../payment_success.php?token=<?php echo urlencode($scanToken); ?>" target="_blank">Receipt</a>
       <?php endif; ?>
     </div>
   </div>

@@ -164,17 +164,56 @@ function event_lookup_application(string $q): ?array
         return null;
     }
     [$token, $mobile, $codeId] = event_parse_scan_query($q);
-    $stmt = $pdo->prepare('
-        SELECT * FROM scholarship_applications
-         WHERE receipt_token = ?
-            OR (CHAR_LENGTH(?) >= 10 AND mobile = ?)
-            OR (? > 0 AND id = ?)
-         ORDER BY (payment_status = \'paid\') DESC, id DESC
-         LIMIT 1
-    ');
-    $stmt->execute([$token, $mobile, $mobile, $codeId, $codeId]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row ?: null;
+    $compact = strtoupper(str_replace([' ', '_'], '', $q));
+    $isPass = (bool) preg_match('/^(?:AGS|SVSS-?DN-?)0*([0-9]+)$/i', $compact);
+    $digits = preg_replace('/\D+/', '', $q);
+    $isBareNumber = $digits !== '' && $digits === preg_replace('/\s+/', '', $q) && strlen($digits) < 10;
+
+    $find = static function (string $sql, array $params) use ($pdo): ?array {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    };
+
+    if (preg_match('/^[a-f0-9]{32,64}$/i', $token)) {
+        $row = $find('SELECT * FROM scholarship_applications WHERE receipt_token = ? ORDER BY (payment_status = \'paid\') DESC, id DESC LIMIT 1', [$token]);
+        if ($row) {
+            $row['_match'] = 'token';
+            return $row;
+        }
+    }
+    if ($isPass && $codeId > 0) {
+        $row = $find('SELECT * FROM scholarship_applications WHERE id = ? LIMIT 1', [$codeId]);
+        if ($row) {
+            $row['_match'] = 'pass';
+            return $row;
+        }
+    }
+    if (strlen($mobile) >= 10) {
+        $row = $find('SELECT * FROM scholarship_applications WHERE mobile = ? ORDER BY (payment_status = \'paid\') DESC, id DESC LIMIT 1', [$mobile]);
+        if ($row) {
+            $row['_match'] = 'mobile';
+            return $row;
+        }
+    }
+    if ($isBareNumber && $codeId > 0) {
+        if (!function_exists('ensure_participant_schema')) {
+            require_once __DIR__ . '/participant_cards.php';
+        }
+        ensure_participant_schema();
+        $row = $find('SELECT * FROM scholarship_applications WHERE participant_no = ? ORDER BY (payment_status = \'paid\') DESC, id DESC LIMIT 1', [$codeId]);
+        if ($row) {
+            $row['_match'] = 'participant';
+            return $row;
+        }
+        $row = $find('SELECT * FROM scholarship_applications WHERE id = ? LIMIT 1', [$codeId]);
+        if ($row) {
+            $row['_match'] = 'id';
+            return $row;
+        }
+    }
+    return null;
 }
 
 function event_application_profile(array $app): array
@@ -194,14 +233,24 @@ function event_application_profile(array $app): array
         $staff = get_staff_by_id((int) $app['submitted_by_staff_id']);
         $staffName = (string) ($staff['name'] ?? '');
     }
+    $participantNo = '';
+    if (($app['payment_status'] ?? '') === 'paid') {
+        if (!function_exists('participant_number_label')) {
+            require_once __DIR__ . '/participant_cards.php';
+        }
+        $participantNo = participant_number_label($app['participant_no'] ?? 0);
+    }
     $student = [
-        'Application ID' => event_application_code($id) . '  (#' . $id . ')',
+        'Participant number' => event_display_value($participantNo),
+        'Pass number' => event_application_code($id),
         'First name' => event_display_value($app['first_name'] ?? ''),
         'Middle name' => event_display_value($app['middle_name'] ?? ''),
         'Last name' => event_display_value($app['last_name'] ?? ''),
         'Full name' => event_display_value($full),
-        'Gender' => event_display_value($app['gender'] ?? ''),
     ];
+    if (trim((string) ($app['gender'] ?? '')) !== '') {
+        $student['Gender'] = event_display_value($app['gender']);
+    }
     $institution = [
         'College / organisation' => event_display_value($app['school_name'] ?? ''),
         'Ticket type' => event_display_value($classLabel),
@@ -232,7 +281,7 @@ function event_application_profile(array $app): array
 
 function event_full_name(array $app): string
 {
-    return trim(($app['first_name'] ?? '') . ' ' . ($app['middle_name'] ?? '') . ' ' . ($app['last_name'] ?? ''));
+    return trim(preg_replace('/\s+/', ' ', ($app['first_name'] ?? '') . ' ' . ($app['middle_name'] ?? '') . ' ' . ($app['last_name'] ?? '')));
 }
 
 function event_desk_filters(array $src): array
