@@ -75,8 +75,9 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         body.is-showcase .crest img { width:78%; height:78%; object-fit:contain; }
         body.is-showcase .wordmark { margin:0; font-size:2.7rem; line-height:1.05; letter-spacing:-.03em; font-weight:800; color:#1d2a6b; }
         body.is-showcase .wordmark span { color:#c23b55; }
-        body.is-showcase .goldbar { width:74px; height:4px; border-radius:99px; background:#d4a24a; margin:14px 0 16px; }
-        body.is-showcase .tagline { margin:0; max-width:420px; color:#2a3344; font-size:1.02rem; line-height:1.55; font-weight:600; }
+        body.is-showcase .goldbar { width:74px; height:4px; border-radius:99px; background:#d4a24a; margin:14px 0 0; }
+        body.is-showcase .poster-link { display:block; margin:0; padding-top:16px; max-width:420px; }
+        body.is-showcase .event-poster { display:block; width:100%; height:auto; max-height:min(40vh, 380px); object-fit:contain; border-radius:16px; background:#f8fafc; box-shadow:0 14px 36px rgba(15,23,42,.12); }
         body.is-showcase .facts { margin-top:18px; color:#3d4a60; font-size:.95rem; line-height:1.6; font-weight:600; }
         body.is-showcase .facts a { display:inline-block; margin-top:8px; color:#1d4ed8; font-weight:800; }
         body.is-showcase .wrap { min-height:0; display:block; padding:0; background:none; }
@@ -91,7 +92,7 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         body.is-showcase .btn.secondary { background:#5b66d6; }
         body.is-showcase .extra { margin-top:14px; }
         body.is-showcase .extra a { background:transparent; color:#5b6b86; padding:6px 0; box-shadow:none; font-size:13px; }
-        body.is-showcase .blob { position:fixed; left:-6vw; bottom:-22vh; width:42vw; height:42vh; background:#1d4ed8; border-radius:50%; z-index:0; pointer-events:none; }
+        body.is-showcase .blob { position:fixed; left:-6vw; bottom:-30vh; width:42vw; height:36vh; background:#1d4ed8; border-radius:50%; z-index:0; pointer-events:none; }
         @media (max-width:1024px) {
             body.is-showcase .stage { grid-template-columns:1fr 1fr; padding:64px 4vw 80px; gap:20px; }
             body.is-showcase .wordmark { font-size:2.1rem; }
@@ -103,7 +104,8 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
             body.is-showcase .hero-side { max-width:none; text-align:center; }
             body.is-showcase .crest { margin:0 auto 16px; width:112px; height:112px; }
             body.is-showcase .goldbar { margin-left:auto; margin-right:auto; }
-            body.is-showcase .tagline, body.is-showcase .facts { margin-left:auto; margin-right:auto; }
+            body.is-showcase .poster-link, body.is-showcase .facts { margin-left:auto; margin-right:auto; }
+            body.is-showcase .event-poster { max-height:168px; }
             body.is-showcase .wordmark { font-size:1.85rem; }
             body.is-showcase .card { margin:8px auto 0; }
             body.is-showcase .blob { width:78vw; height:22vh; left:-24vw; bottom:-12vh; }
@@ -113,7 +115,7 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
             body.is-showcase .crest { width:84px; height:84px; margin-bottom:10px; }
             body.is-showcase .wordmark { font-size:1.6rem; }
             body.is-showcase .goldbar { margin:8px auto 8px; }
-            body.is-showcase .tagline { font-size:.92rem; line-height:1.4; }
+            body.is-showcase .event-poster { max-height:100px; }
             body.is-showcase .facts { margin-top:8px; font-size:.86rem; line-height:1.4; }
             body.is-showcase .facts a { margin-top:4px; }
             body.is-showcase .card { padding:18px 16px 12px; }
@@ -131,7 +133,15 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         <?php if ($brandLogo !== ''): ?><div class="crest"><img src="<?php echo htmlspecialchars($brandLogo); ?>" alt=""></div><?php endif; ?>
         <p class="wordmark"><?php if (!empty($showcase_kicker)): ?><?php echo htmlspecialchars($showcase_kicker); ?> <?php endif; ?><span><?php echo htmlspecialchars($showcase_accent ?? $page_title); ?></span></p>
         <div class="goldbar"></div>
-        <p class="tagline"><?php echo htmlspecialchars($showcase_tagline ?? ''); ?></p>
+        <?php
+        $eventPoster = function_exists('landing_poster_src') ? landing_poster_src() : '';
+        $posterHref = 'welcome.php' . ($staff_ref ? ('?ref=' . urlencode((string) $staff_ref)) : '');
+        ?>
+        <?php if ($eventPoster !== ''): ?>
+        <a class="poster-link" href="<?php echo htmlspecialchars($posterHref); ?>" aria-label="<?php echo htmlspecialchars($page_title); ?> poster">
+            <img class="event-poster" src="<?php echo htmlspecialchars($eventPoster); ?>" alt="<?php echo htmlspecialchars($page_title); ?>">
+        </a>
+        <?php endif; ?>
         <?php if (!empty($show_program_info) && !empty($program_facts)): ?>
         <div class="facts">
             <?php foreach ($program_facts as $fact): ?>

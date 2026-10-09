@@ -145,7 +145,6 @@ if (preg_match('/^SVSS\s+(.+)$/iu', $eventTitle, $titleParts)) {
     $showcase_kicker = 'SVSS';
     $showcase_accent = $titleParts[1];
 }
-$showcase_tagline = 'मोबाइल OTP ने नोंदणी करा. पेमेंट झाल्यावर पास नंबर आणि तिकीट मिळेल.';
 $page_heading = 'Login';
 $page_sub = $lockedStaff
     ? 'Form via ' . $lockedStaff['name'] . '. Enter your mobile number.'
