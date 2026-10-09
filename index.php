@@ -279,8 +279,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                     'coupon_code' => $appliedCoupon ? (string) $appliedCoupon['code'] : '',
                 ];
 
-                if ($formUser['type'] === 'student' && !empty($formUser['id'])) {
-                    update_student_profile((int) $formUser['id'], $applicationData['full_name']);
+                $forSelf = (string) ($_POST['for_self'] ?? '1') !== '0';
+                if ($formUser['type'] === 'student' && !empty($formUser['id']) && $forSelf) {
+                    save_student_form_profile((int) $formUser['id'], [
+                        'first_name' => $first_name,
+                        'middle_name' => $middle_name,
+                        'last_name' => $last_name,
+                        'college_id' => $college_id,
+                        'school_name' => $school_name,
+                    ]);
                     $_SESSION['student_auth_name'] = $applicationData['full_name'];
                     $formUser['name'] = $applicationData['full_name'];
                 }
@@ -369,6 +376,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
         exit;
     }
 }
+
+$savedProfile = [];
+$profileReady = false;
+if (($formUser['type'] ?? '') === 'student' && (int) ($formUser['id'] ?? 0) > 0 && function_exists('student_saved_profile')) {
+    $savedProfile = student_saved_profile((int) $formUser['id']);
+    $profileReady = ($savedProfile['first_name'] ?? '') !== '' && ($savedProfile['last_name'] ?? '') !== '';
+}
+if ($applicationData === [] && $profileReady) {
+    $applicationData = [
+        'first_name' => $savedProfile['first_name'],
+        'middle_name' => $savedProfile['middle_name'],
+        'last_name' => $savedProfile['last_name'],
+        'college_id' => $savedProfile['college_id'],
+        'school_name' => $savedProfile['school_name'],
+        'class' => $savedProfile['class'],
+        'for_self' => '1',
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -440,13 +465,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             flex-wrap: wrap;
             font-size: 0.9rem;
         }
+        .user-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+            flex: 1 1 240px;
+            min-width: 0;
+            max-width: 100%;
+        }
         .user-bar a {
             color: #fff;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 13px;
             text-decoration: none;
-            background: #ef4444;
-            padding: 6px 14px;
-            border-radius: 8px;
+            background: rgba(255,255,255,.16);
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
+        .user-bar a.on {
+            background: #fff;
+            color: #0058F0;
         }
 
         .header {
@@ -795,14 +834,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
             (<?php echo htmlspecialchars($formUser['type'] === 'admin' ? 'Admin' : 'Student'); ?>
             · +91 <?php echo htmlspecialchars(local_10_digit($formUser['phone'])); ?>)
         </div>
-        <div>
-        <?php if ($formUser['type'] !== 'admin'): ?>
-        <a href="my_registrations.php" style="margin-right:10px;color:#fff;">My registrations</a>
-        <?php endif; ?>
-        <?php if (function_exists('help_whatsapp_url') && help_whatsapp_url() !== ''): ?>
-        <a href="<?php echo htmlspecialchars(help_whatsapp_url()); ?>" target="_blank" rel="noopener" style="margin-right:10px;color:#fff;">Help</a>
-        <?php endif; ?>
-        <a href="<?php echo $formUser['type'] === 'admin' ? 'adminpanel/admin_logout.php' : 'student_logout.php'; ?>">Logout</a>
+        <div class="user-nav">
+            <a href="my_registrations.php">My registrations</a>
+            <a class="on" href="index.php">Registration form</a>
+            <?php if (function_exists('help_whatsapp_url') && help_whatsapp_url() !== ''): ?>
+            <a href="<?php echo htmlspecialchars(help_whatsapp_url()); ?>" target="_blank" rel="noopener">Help</a>
+            <?php endif; ?>
+            <a href="<?php echo $formUser['type'] === 'admin' ? 'adminpanel/admin_logout.php' : 'student_logout.php'; ?>">Logout</a>
         </div>
     </div>
 </div>
@@ -1088,29 +1126,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         <?php endif; ?>
 
                         <div class="section-title">👤 Guest details</div>
+                        <?php if ($profileReady): ?>
+                        <div class="alert alert-light border mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="for_self" id="forSelfYes" value="1" <?php echo (string) ($applicationData['for_self'] ?? '1') !== '0' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="forSelfYes">Use my saved details</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="for_self" id="forSelfNo" value="0" <?php echo (string) ($applicationData['for_self'] ?? '1') === '0' ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="forSelfNo">This form is for someone else</label>
+                            </div>
+                            <small class="text-muted">Your name and college stay saved for the next event. Ticket type can still be changed.</small>
+                        </div>
+                        <?php else: ?>
+                        <input type="hidden" name="for_self" value="1">
+                        <?php endif; ?>
                         
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                <input type="text" name="first_name" class="form-control" value="<?php echo htmlspecialchars($applicationData['first_name'] ?? ''); ?>" required minlength="2" maxlength="50" placeholder="Enter first name">
+                                <input type="text" name="first_name" id="guestFirst" class="form-control" value="<?php echo htmlspecialchars($applicationData['first_name'] ?? ''); ?>" required minlength="2" maxlength="50" placeholder="Enter first name" data-saved="<?php echo htmlspecialchars((string) ($savedProfile['first_name'] ?? '')); ?>">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Middle Name</label>
-                                <input type="text" name="middle_name" class="form-control" value="<?php echo htmlspecialchars($applicationData['middle_name'] ?? ''); ?>" maxlength="50" placeholder="Enter middle name (optional)">
+                                <input type="text" name="middle_name" id="guestMiddle" class="form-control" value="<?php echo htmlspecialchars($applicationData['middle_name'] ?? ''); ?>" maxlength="50" placeholder="Enter middle name (optional)" data-saved="<?php echo htmlspecialchars((string) ($savedProfile['middle_name'] ?? '')); ?>">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                                <input type="text" name="last_name" class="form-control" value="<?php echo htmlspecialchars($applicationData['last_name'] ?? ''); ?>" required minlength="2" maxlength="50" placeholder="Enter last name">
+                                <input type="text" name="last_name" id="guestLast" class="form-control" value="<?php echo htmlspecialchars($applicationData['last_name'] ?? ''); ?>" required minlength="2" maxlength="50" placeholder="Enter last name" data-saved="<?php echo htmlspecialchars((string) ($savedProfile['last_name'] ?? '')); ?>">
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <?php college_field((int) ($applicationData['college_id'] ?? 0), (string) ($applicationData['college_other'] ?? ''), (string) ($applicationData['school_name'] ?? '')); ?>
+                            <input type="hidden" id="savedCollegeId" value="<?php echo (int) ($savedProfile['college_id'] ?? 0); ?>">
+                            <input type="hidden" id="savedSchool" value="<?php echo htmlspecialchars((string) ($savedProfile['school_name'] ?? '')); ?>">
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Ticket type <span class="text-danger">*</span></label>
-                            <select name="class" id="classSelect" class="form-select" required>
+                            <select name="class" id="classSelect" class="form-select" required data-saved="<?php echo htmlspecialchars((string) ($savedProfile['class'] ?? '')); ?>">
                                 <option value="">-- Select ticket type --</option>
                                 <?php foreach (form_classes_for('academia') as $ck => $cl): ?>
                                 <option value="<?php echo htmlspecialchars($ck); ?>" <?php echo (($applicationData['class'] ?? '') === $ck) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cl); ?></option>
@@ -1257,6 +1312,32 @@ document.querySelectorAll('input[name="staff_referred"]').forEach(function(el) {
     el.addEventListener('change', syncStaffReferralUi);
 });
 syncStaffReferralUi();
+
+document.querySelectorAll('input[name="for_self"]').forEach(function(el) {
+    el.addEventListener('change', function() {
+        var mine = document.getElementById('forSelfYes') && document.getElementById('forSelfYes').checked;
+        ['guestFirst', 'guestMiddle', 'guestLast'].forEach(function(id) {
+            var input = document.getElementById(id);
+            if (!input) return;
+            input.value = mine ? (input.getAttribute('data-saved') || '') : '';
+        });
+        var college = document.getElementById('collegeSelect');
+        var savedCollege = document.getElementById('savedCollegeId');
+        var other = document.getElementById('collegeOther');
+        var savedSchool = document.getElementById('savedSchool');
+        if (college) {
+            college.value = mine && savedCollege ? (savedCollege.value || '') : '';
+            college.dispatchEvent(new Event('change'));
+        }
+        if (other) {
+            other.value = mine && savedSchool ? (savedSchool.value || '') : '';
+        }
+        var ticket = document.getElementById('classSelect');
+        if (ticket) {
+            ticket.value = mine ? (ticket.getAttribute('data-saved') || '') : '';
+        }
+    });
+});
 
 var applicationForm = document.getElementById('applicationForm');
 if (applicationForm) {

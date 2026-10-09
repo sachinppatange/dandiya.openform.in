@@ -33,6 +33,103 @@ function mark_student_login(string $phone): void {
     }
 }
 
+function ensure_student_profile_schema(): void
+{
+    static $done = false;
+    if ($done) {
+        return;
+    }
+    $done = true;
+    try {
+        if (!function_exists('db_ensure_column')) {
+            require_once __DIR__ . '/../db.php';
+        }
+        $pdo = student_pdo();
+        db_ensure_column($pdo, 'students', 'first_name', 'varchar(100) DEFAULT NULL');
+        db_ensure_column($pdo, 'students', 'middle_name', 'varchar(100) DEFAULT NULL');
+        db_ensure_column($pdo, 'students', 'last_name', 'varchar(100) DEFAULT NULL');
+        db_ensure_column($pdo, 'students', 'college_id', 'int(11) DEFAULT NULL');
+        db_ensure_column($pdo, 'students', 'school_name', 'varchar(255) DEFAULT NULL');
+    } catch (Throwable $e) {
+        error_log('student profile schema: ' . $e->getMessage());
+    }
+}
+
+function student_saved_profile(int $id): array
+{
+    ensure_student_profile_schema();
+    $empty = [
+        'first_name' => '',
+        'middle_name' => '',
+        'last_name' => '',
+        'college_id' => 0,
+        'school_name' => '',
+        'class' => '',
+    ];
+    if ($id < 1) {
+        return $empty;
+    }
+    try {
+        $stmt = student_pdo()->prepare('SELECT first_name, middle_name, last_name, college_id, school_name, name FROM students WHERE id = ?');
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    } catch (Throwable $e) {
+        $row = [];
+    }
+    $profile = [
+        'first_name' => trim((string) ($row['first_name'] ?? '')),
+        'middle_name' => trim((string) ($row['middle_name'] ?? '')),
+        'last_name' => trim((string) ($row['last_name'] ?? '')),
+        'college_id' => (int) ($row['college_id'] ?? 0),
+        'school_name' => trim((string) ($row['school_name'] ?? '')),
+        'class' => '',
+    ];
+    if ($profile['first_name'] === '' || $profile['last_name'] === '') {
+        $apps = applications_for_account();
+        $latest = $apps[0] ?? null;
+        if ($latest) {
+            $profile['first_name'] = $profile['first_name'] !== '' ? $profile['first_name'] : trim((string) ($latest['first_name'] ?? ''));
+            $profile['middle_name'] = $profile['middle_name'] !== '' ? $profile['middle_name'] : trim((string) ($latest['middle_name'] ?? ''));
+            $profile['last_name'] = $profile['last_name'] !== '' ? $profile['last_name'] : trim((string) ($latest['last_name'] ?? ''));
+            $profile['school_name'] = $profile['school_name'] !== '' ? $profile['school_name'] : trim((string) ($latest['school_name'] ?? ''));
+            $profile['college_id'] = $profile['college_id'] > 0 ? $profile['college_id'] : (int) ($latest['college_id'] ?? 0);
+            $profile['class'] = trim((string) ($latest['class'] ?? ''));
+            if ($profile['first_name'] !== '' && $profile['last_name'] !== '') {
+                save_student_form_profile($id, $profile);
+            }
+        }
+    }
+    return $profile;
+}
+
+function save_student_form_profile(int $id, array $data): void
+{
+    if ($id < 1) {
+        return;
+    }
+    ensure_student_profile_schema();
+    $first = trim((string) ($data['first_name'] ?? ''));
+    $middle = trim((string) ($data['middle_name'] ?? ''));
+    $last = trim((string) ($data['last_name'] ?? ''));
+    $name = trim($first . ' ' . $middle . ' ' . $last);
+    $collegeId = (int) ($data['college_id'] ?? 0);
+    $school = trim((string) ($data['school_name'] ?? ''));
+    try {
+        $stmt = student_pdo()->prepare('UPDATE students SET name = ?, first_name = ?, middle_name = ?, last_name = ?, college_id = ?, school_name = ? WHERE id = ?');
+        $stmt->execute([
+            $name !== '' ? $name : null,
+            $first !== '' ? $first : null,
+            $middle !== '' ? $middle : null,
+            $last !== '' ? $last : null,
+            $collegeId > 0 ? $collegeId : null,
+            $school !== '' ? $school : null,
+            $id,
+        ]);
+    } catch (Throwable $e) {
+        error_log('save_student_form_profile: ' . $e->getMessage());
+    }
+}
+
 function update_student_profile(int $id, string $name, ?string $email = null): void {
     try {
         $stmt = student_pdo()->prepare("UPDATE students SET name = ?, email = COALESCE(?, email) WHERE id = ?");
