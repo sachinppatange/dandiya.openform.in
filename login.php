@@ -136,10 +136,20 @@ if (!function_exists('form_workshop_period_label')) {
     require_once __DIR__ . '/includes/form_catalog.php';
 }
 $page_title = landing_page_title();
-$page_heading = $page_title;
+$login_showcase = true;
+$send_otp_label = 'Send OTP';
+$eventTitle = $page_title;
+$showcase_kicker = '';
+$showcase_accent = $eventTitle;
+if (preg_match('/^SVSS\s+(.+)$/iu', $eventTitle, $titleParts)) {
+    $showcase_kicker = 'SVSS';
+    $showcase_accent = $titleParts[1];
+}
+$showcase_tagline = 'मोबाइल OTP ने नोंदणी करा. पेमेंट झाल्यावर पास नंबर आणि तिकीट मिळेल.';
+$page_heading = 'Login';
 $page_sub = $lockedStaff
-    ? 'Form via ' . $lockedStaff['name'] . '. Enter mobile number for SMS OTP.'
-    : 'Enter your mobile number to register. Your pass number and ticket open after payment.';
+    ? 'Form via ' . $lockedStaff['name'] . '. Enter your mobile number.'
+    : 'Enter your mobile number to receive the OTP.';
 $show_program_info = landing_is_enabled();
 $program_facts = [];
 if ($show_program_info) {
@@ -155,8 +165,8 @@ if ($show_program_info) {
         $program_facts[] = ['Fee', landing_entry_fee()['label']];
     }
 }
-$phone_label = 'Mobile number*';
-$note_text = 'First login creates your profile. Username = mobile, password = SMS OTP.';
+$phone_label = 'Mobile number *';
+$note_text = '';
 $extra_links = '<a href="staff/login.php">Staff Login</a>';
 $staff_ref = (string) ($_SESSION['staff_ref'] ?? '');
 $otp_length = (int) OTP_LENGTH;

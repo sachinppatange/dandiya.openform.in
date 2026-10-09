@@ -19,6 +19,10 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($page_title); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php if (!empty($login_showcase)): ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <?php endif; ?>
     <link rel="stylesheet" href="<?php echo htmlspecialchars((strpos((string) ($_SERVER['SCRIPT_NAME'] ?? ''), '/staff/') !== false || strpos((string) ($_SERVER['SCRIPT_NAME'] ?? ''), '/adminpanel/') !== false) ? '../assets/css/theme.css?v=2' : 'assets/css/theme.css?v=2'); ?>">
     <style>
         * { box-sizing: border-box; }
@@ -62,9 +66,83 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         .pw-wrap .link { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:13px; }
         .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 12px;border-radius:10px;opacity:0;transition:opacity .2s;z-index:9999;}
         .toast.show{opacity:1;}
+        body.is-showcase { background:#fff; color:#172033; font-family:"Plus Jakarta Sans", system-ui, sans-serif; }
+        body.is-showcase .help-link { position:absolute; top:22px; right:28px; z-index:3; color:#24356b; font-weight:700; text-decoration:none; font-size:15px; }
+        body.is-showcase .stage { min-height:100dvh; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr); align-items:center; gap:32px; padding:72px 7vw 96px; position:relative; z-index:1; }
+        body.is-showcase .hero-side { max-width:520px; }
+        body.is-showcase .form-side { min-width:0; }
+        body.is-showcase .crest { width:168px; height:168px; border-radius:50%; border:3px solid #c6a15b; background:#fff; display:grid; place-items:center; overflow:hidden; margin-bottom:22px; }
+        body.is-showcase .crest img { width:78%; height:78%; object-fit:contain; }
+        body.is-showcase .wordmark { margin:0; font-size:2.7rem; line-height:1.05; letter-spacing:-.03em; font-weight:800; color:#1d2a6b; }
+        body.is-showcase .wordmark span { color:#c23b55; }
+        body.is-showcase .goldbar { width:74px; height:4px; border-radius:99px; background:#d4a24a; margin:14px 0 16px; }
+        body.is-showcase .tagline { margin:0; max-width:420px; color:#2a3344; font-size:1.02rem; line-height:1.55; font-weight:600; }
+        body.is-showcase .facts { margin-top:18px; color:#3d4a60; font-size:.95rem; line-height:1.6; font-weight:600; }
+        body.is-showcase .facts a { display:inline-block; margin-top:8px; color:#1d4ed8; font-weight:800; }
+        body.is-showcase .wrap { min-height:0; display:block; padding:0; background:none; }
+        body.is-showcase .card { width:100%; max-width:430px; margin-left:auto; border-radius:22px; padding:28px 26px 22px; border:1px solid #eef1f6; box-shadow:0 18px 50px rgba(15,23,42,.08); }
+        body.is-showcase .card h1 { text-align:left; font-size:1.7rem; color:#1d3fbf; margin-bottom:6px; }
+        body.is-showcase .sub { text-align:left; margin-bottom:4px; }
+        body.is-showcase .brand { display:none; }
+        body.is-showcase .program { display:none; }
+        body.is-showcase .phone-prefix { background:#f3f5f8; color:#334155; border-color:#e6eaf0; }
+        body.is-showcase .input { border-radius:12px; border-color:#e4e8ef; }
+        body.is-showcase .btn { border-radius:999px; background:#6d78e6; box-shadow:none; font-weight:700; }
+        body.is-showcase .btn.secondary { background:#5b66d6; }
+        body.is-showcase .extra { margin-top:14px; }
+        body.is-showcase .extra a { background:transparent; color:#5b6b86; padding:6px 0; box-shadow:none; font-size:13px; }
+        body.is-showcase .blob { position:fixed; left:-6vw; bottom:-22vh; width:42vw; height:42vh; background:#1d4ed8; border-radius:50%; z-index:0; pointer-events:none; }
+        @media (max-width:1024px) {
+            body.is-showcase .stage { grid-template-columns:1fr 1fr; padding:64px 4vw 80px; gap:20px; }
+            body.is-showcase .wordmark { font-size:2.1rem; }
+            body.is-showcase .crest { width:132px; height:132px; }
+        }
+        @media (max-width:760px) {
+            body.is-showcase .help-link { top:14px; right:16px; font-size:14px; }
+            body.is-showcase .stage { grid-template-columns:1fr; padding:58px 16px 36px; }
+            body.is-showcase .hero-side { max-width:none; text-align:center; }
+            body.is-showcase .crest { margin:0 auto 16px; width:112px; height:112px; }
+            body.is-showcase .goldbar { margin-left:auto; margin-right:auto; }
+            body.is-showcase .tagline, body.is-showcase .facts { margin-left:auto; margin-right:auto; }
+            body.is-showcase .wordmark { font-size:1.85rem; }
+            body.is-showcase .card { margin:8px auto 0; }
+            body.is-showcase .blob { width:78vw; height:22vh; left:-24vw; bottom:-12vh; }
+        }
+        @media (max-width:760px) and (max-height:740px) {
+            body.is-showcase .stage { padding:46px 16px 20px; }
+            body.is-showcase .crest { width:84px; height:84px; margin-bottom:10px; }
+            body.is-showcase .wordmark { font-size:1.6rem; }
+            body.is-showcase .goldbar { margin:8px auto 8px; }
+            body.is-showcase .tagline { font-size:.92rem; line-height:1.4; }
+            body.is-showcase .facts { margin-top:8px; font-size:.86rem; line-height:1.4; }
+            body.is-showcase .facts a { margin-top:4px; }
+            body.is-showcase .card { padding:18px 16px 12px; }
+        }
     </style>
 </head>
-<body>
+<body<?php echo !empty($login_showcase) ? ' class="is-showcase"' : ''; ?>>
+<?php if (!empty($login_showcase)):
+    $helpUrl = function_exists('help_whatsapp_url') ? help_whatsapp_url() : '';
+?>
+<?php if ($helpUrl !== ''): ?><a class="help-link" href="<?php echo htmlspecialchars($helpUrl); ?>" target="_blank" rel="noopener">Help / Support</a><?php endif; ?>
+<div class="stage">
+    <section class="hero-side">
+        <?php $brandLogo = function_exists('panel_logo_src') ? panel_logo_src() : ''; ?>
+        <?php if ($brandLogo !== ''): ?><div class="crest"><img src="<?php echo htmlspecialchars($brandLogo); ?>" alt=""></div><?php endif; ?>
+        <p class="wordmark"><?php if (!empty($showcase_kicker)): ?><?php echo htmlspecialchars($showcase_kicker); ?> <?php endif; ?><span><?php echo htmlspecialchars($showcase_accent ?? $page_title); ?></span></p>
+        <div class="goldbar"></div>
+        <p class="tagline"><?php echo htmlspecialchars($showcase_tagline ?? ''); ?></p>
+        <?php if (!empty($show_program_info) && !empty($program_facts)): ?>
+        <div class="facts">
+            <?php foreach ($program_facts as $fact): ?>
+                <div><?php echo htmlspecialchars((string) $fact[0]); ?>: <?php echo htmlspecialchars((string) $fact[1]); ?></div>
+            <?php endforeach; ?>
+            <a href="welcome.php<?php echo $staff_ref ? ('?ref=' . urlencode((string) $staff_ref)) : ''; ?>">Event details</a>
+        </div>
+        <?php endif; ?>
+    </section>
+    <section class="form-side">
+<?php endif; ?>
 <div class="wrap">
     <div class="card" role="region" aria-label="<?php echo htmlspecialchars($page_heading); ?>">
         <?php
@@ -134,7 +212,7 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
                     <span class="phone-prefix">+<?php echo htmlspecialchars($country_code); ?></span>
                     <input id="phone" class="input phone-input" type="tel" name="mobile" maxlength="10" inputmode="numeric" pattern="\d{10}" placeholder="10-digit mobile number" value="<?php echo htmlspecialchars($mobile_prefill); ?>" required autofocus>
                 </div>
-                <button class="btn top-gap" id="sendOtpBtn" type="submit" disabled>Send SMS OTP</button>
+                <button class="btn top-gap" id="sendOtpBtn" type="submit" disabled><?php echo htmlspecialchars($send_otp_label ?? 'Send SMS OTP'); ?></button>
                 <?php if ($note_text): ?><div class="note"><?php echo htmlspecialchars(strip_tags($note_text)); ?></div><?php endif; ?>
             </form>
         <?php else: ?>
@@ -183,6 +261,11 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         <?php endif; ?>
     </div>
 </div>
+<?php if (!empty($login_showcase)): ?>
+    </section>
+</div>
+<div class="blob" aria-hidden="true"></div>
+<?php endif; ?>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
     const toastEl = document.getElementById('toast');
@@ -242,6 +325,6 @@ $staff_ref = $staff_ref ?? ($_SESSION['staff_ref'] ?? '');
         });
     }
 </script>
-<?php if (function_exists('help_whatsapp_button')) { echo help_whatsapp_button(true); } ?>
+<?php if (empty($login_showcase) && function_exists('help_whatsapp_button')) { echo help_whatsapp_button(true); } ?>
 </body>
 </html>
