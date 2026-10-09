@@ -45,7 +45,7 @@ function app_db_is_local(): bool
 
 $localDb = [
     'host' => 'localhost',
-    'name' => 'hplcopenform',
+    'name' => 'dandiyanew',
     'user' => 'root',
     'password' => '',
     'charset' => 'utf8mb4',
@@ -53,8 +53,8 @@ $localDb = [
 
 $liveDb = [
     'host' => 'localhost',
-    'name' => 'u750208840_hplcdb',
-    'user' => 'u750208840_hplcuser',
+    'name' => 'u750208840_dandiyadb',
+    'user' => 'u750208840_dandiyauser',
     'password' => 'Sachin@1078#',
     'charset' => 'utf8mb4',
 ];
