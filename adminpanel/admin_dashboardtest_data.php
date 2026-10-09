@@ -7,6 +7,8 @@ if (!function_exists('form_all_class_labels')) {
     require_once __DIR__ . '/../includes/form_catalog.php';
 }
 require_once __DIR__ . '/registration_query.php';
+require_once __DIR__ . '/../includes/participant_cards.php';
+require_once __DIR__ . '/../includes/event_stations.php';
 
 header('Content-Type: application/json');
 
@@ -68,12 +70,21 @@ foreach ($rows as $app) {
     $status = (string) $app['payment_status'];
     $actions = '<a href="view_application.php?id=' . (int) $app['id'] . '" class="btn sm">View</a> ';
     $actions .= '<a href="edit_application.php?id=' . (int) $app['id'] . '" class="btn sm gold">Edit</a>';
-    if ($status === 'paid' && !empty($app['receipt_token'])) {
-        $actions .= ' <a href="../payment_success.php?token=' . urlencode((string) $app['receipt_token']) . '" class="btn sm green" target="_blank">Receipt</a>';
+    $numberCell = '—';
+    if ($status === 'paid') {
+        $pno = participant_number_label($app['participant_no'] ?? 0);
+        $pass = event_application_code((int) $app['id']);
+        $numberCell = '<b>' . htmlspecialchars($pno !== '' ? $pno : '—') . '</b>';
+        $numberCell .= '<br><small>' . htmlspecialchars($pass) . '</small>';
+        if (!empty($app['receipt_token'])) {
+            $token = urlencode((string) $app['receipt_token']);
+            $actions .= ' <a href="../icard.php?token=' . $token . '" class="btn sm" target="_blank">Ticket</a>';
+            $actions .= ' <a href="../payment_success.php?token=' . $token . '" class="btn sm green" target="_blank">Receipt</a>';
+        }
     }
     $data[] = [
         $sr++,
-        (int) $app['id'],
+        $numberCell,
         htmlspecialchars($full_name),
         htmlspecialchars((string) $app['school_name']),
         htmlspecialchars((string) $classLab),

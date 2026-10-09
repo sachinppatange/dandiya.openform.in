@@ -8,6 +8,8 @@ if (!function_exists('form_all_class_labels')) {
     require_once __DIR__ . '/../includes/form_catalog.php';
 }
 require_once __DIR__ . '/registration_query.php';
+require_once __DIR__ . '/../includes/colleges.php';
+require_once __DIR__ . '/../includes/participant_cards.php';
 
 if (empty($_SESSION['admin_auth_user'])) {
     header('Location: admin_login.php?next=admin_dashboard.php');
@@ -35,6 +37,8 @@ $sizeFilter = $f['size'];
 $eventFilter = $f['event'];
 $q = $f['q'];
 $range = $f['range'];
+$collegeFilter = (int) ($f['college'] ?? 0);
+$collegeOptions = college_list(false);
 
 $rangeSql = '';
 if ($range === '7') $rangeSql = 'created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
@@ -296,7 +300,7 @@ $agingSegs = [
     ['key'=>'old','label'=>'30+ days','cls'=>'age-old','cnt'=>$aging['old']['cnt'],'amt'=>$aging['old']['amt']],
 ];
 
-$qs = static function (array $extra = []) use ($current_filter, $classFilter, $q, $range, $instFilter, $sizeFilter, $eventFilter, $tab): string {
+$qs = static function (array $extra = []) use ($current_filter, $classFilter, $q, $range, $instFilter, $sizeFilter, $eventFilter, $tab, $collegeFilter): string {
     return '?' . http_build_query(array_merge([
         'tab' => $tab,
         'filter' => $current_filter,
@@ -306,6 +310,7 @@ $qs = static function (array $extra = []) use ($current_filter, $classFilter, $q
         'event' => $eventFilter,
         'q' => $q,
         'range' => $range,
+        'college' => $collegeFilter,
     ], $extra));
 };
 $sparkMax = static function (array $days, string $key): float {
@@ -321,6 +326,7 @@ $exportQs = http_build_query([
     'event' => $eventFilter,
     'q' => $q,
     'range' => $range,
+    'college' => $collegeFilter,
 ]);
 $rangeLabel = $range === '7' ? 'Last 7 days' : ($range === '30' ? 'Last 30 days' : 'All time');
 $districtMax = 0;
@@ -378,7 +384,7 @@ $listQs = $qs(['tab' => 'list']);
     <div>
       <div class="dash-kicker">Admin panel</div>
       <h2>Welcome, <?php echo htmlspecialchars($adminName); ?></h2>
-      <p><?php echo (int) $today_stats['today_applications']; ?> registrations today · <?php echo (int) $today_stats['today_paid']; ?> paid · ₹<?php echo number_format((float) $today_stats['today_revenue'], 0); ?> collected today</p>
+      <p><?php echo htmlspecialchars(function_exists('landing_page_title') ? landing_page_title() : 'Registrations'); ?> · <?php echo (int) $today_stats['today_applications']; ?> registrations today · <?php echo (int) $today_stats['today_paid']; ?> paid · ₹<?php echo number_format((float) $today_stats['today_revenue'], 0); ?> collected today</p>
     </div>
     <form class="dash-toolbar-actions" method="get">
       <input type="hidden" name="tab" value="<?php echo htmlspecialchars($tab); ?>">
@@ -388,11 +394,13 @@ $listQs = $qs(['tab' => 'list']);
       <input type="hidden" name="size" value="<?php echo htmlspecialchars($sizeFilter); ?>">
       <input type="hidden" name="event" value="<?php echo htmlspecialchars($eventFilter); ?>">
       <input type="hidden" name="q" value="<?php echo htmlspecialchars($q); ?>">
+      <input type="hidden" name="college" value="<?php echo (int) $collegeFilter; ?>">
       <select name="range" onchange="this.form.submit()">
         <option value="all" <?php echo $range==='all'?'selected':''; ?>>All time</option>
         <option value="7" <?php echo $range==='7'?'selected':''; ?>>Last 7 days</option>
         <option value="30" <?php echo $range==='30'?'selected':''; ?>>Last 30 days</option>
       </select>
+      <a class="btn sm" href="participant_cards.php">Participant cards</a>
       <a class="btn sm gray" href="<?php echo htmlspecialchars($qs()); ?>">Refresh</a>
       <a class="btn sm" href="admin_export.php?format=excel&amp;<?php echo htmlspecialchars($exportQs); ?>">Excel</a>
       <a class="btn sm gold" href="admin_export.php?format=pdf&amp;<?php echo htmlspecialchars($exportQs); ?>" target="_blank">PDF</a>
@@ -492,22 +500,22 @@ $listQs = $qs(['tab' => 'list']);
   <div class="dash-row dash-row-split">
     <div class="card">
       <div class="card-head">
-        <h3>By role</h3>
+        <h3>By ticket type</h3>
         <span class="muted"><?php echo htmlspecialchars($rangeLabel); ?></span>
       </div>
       <?php if (!$class_stats): ?>
-        <p class="page-sub">No role data yet.</p>
+        <p class="page-sub">No ticket types yet.</p>
       <?php else: ?>
         <div class="chart-box"><canvas id="classChart"></canvas></div>
       <?php endif; ?>
     </div>
     <div class="card">
       <div class="card-head">
-        <h3>By organisation</h3>
+        <h3>By college</h3>
         <span class="muted">Top 8</span>
       </div>
       <?php if (!$districts): ?>
-        <p class="page-sub">No organisation data yet.</p>
+        <p class="page-sub">No college data yet.</p>
       <?php else: ?>
         <div class="geo-list">
           <?php foreach ($districts as $d): ?>
@@ -540,7 +548,7 @@ $listQs = $qs(['tab' => 'list']);
 
   <div class="dash-row dash-row-2">
     <div class="card">
-      <div class="card-head"><h3>Role</h3></div>
+      <div class="card-head"><h3>Ticket type</h3></div>
       <div class="chart-box sm"><canvas id="mediumDonut"></canvas></div>
     </div>
     <div class="card">
@@ -553,8 +561,8 @@ $listQs = $qs(['tab' => 'list']);
     <?php
     $rankTables = [
         ['title' => 'Top staff', 'rows' => $topStaff, 'value' => 'cnt', 'money' => false],
-        ['title' => 'Top organisations', 'rows' => $schools, 'value' => 'cnt', 'money' => false],
-        ['title' => 'By role', 'rows' => $event_stats, 'value' => 'cnt', 'money' => false],
+        ['title' => 'Top colleges', 'rows' => $schools, 'value' => 'cnt', 'money' => false],
+        ['title' => 'By ticket type', 'rows' => $event_stats, 'value' => 'cnt', 'money' => false],
     ];
     foreach ($rankTables as $table):
     ?>
@@ -594,8 +602,8 @@ $listQs = $qs(['tab' => 'list']);
         <table class="plain">
           <thead>
             <tr>
-              <th>ID</th><th>Participant</th><th>Phone</th>
-              <th>Organisation</th><th>Registered</th><th>Due days</th><th>Remaining</th>
+              <th>ID</th><th>Guest</th><th>Phone</th>
+              <th>College</th><th>Registered</th><th>Due days</th><th>Remaining</th>
             </tr>
           </thead>
           <tbody>
@@ -639,7 +647,7 @@ $listQs = $qs(['tab' => 'list']);
     <form class="filters" method="get" id="filterForm">
       <input type="hidden" name="tab" value="list">
       <input type="hidden" name="range" value="<?php echo htmlspecialchars($range); ?>">
-      <input type="search" name="q" value="<?php echo htmlspecialchars($q); ?>" placeholder="Search name / mobile / organisation">
+      <input type="search" name="q" value="<?php echo htmlspecialchars($q); ?>" placeholder="Search name, mobile, college, number or pass">
       <select name="filter" onchange="this.form.submit()">
         <option value="all" <?php echo $current_filter==='all'?'selected':''; ?>>All status</option>
         <option value="paid" <?php echo $current_filter==='paid'?'selected':''; ?>>Paid</option>
@@ -647,9 +655,15 @@ $listQs = $qs(['tab' => 'list']);
         <option value="failed" <?php echo $current_filter==='failed'?'selected':''; ?>>Failed</option>
       </select>
       <select name="class" onchange="this.form.submit()">
-        <option value="">All roles</option>
+        <option value="">All ticket types</option>
         <?php foreach ($class_labels as $num=>$label): ?>
           <option value="<?php echo htmlspecialchars((string)$num); ?>" <?php echo $classFilter===(string)$num?'selected':''; ?>><?php echo htmlspecialchars((string)$label); ?></option>
+        <?php endforeach; ?>
+      </select>
+      <select name="college" onchange="this.form.submit()">
+        <option value="0">All colleges</option>
+        <?php foreach ($collegeOptions as $college): ?>
+          <option value="<?php echo (int) $college['id']; ?>" <?php echo $collegeFilter === (int) $college['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars((string) $college['name']); ?></option>
         <?php endforeach; ?>
       </select>
       <button class="btn" type="submit">Search</button>
@@ -661,10 +675,10 @@ $listQs = $qs(['tab' => 'list']);
         <thead>
           <tr>
             <th>#</th>
-            <th>ID</th>
-            <th>Participant</th>
-            <th>Organisation Name</th>
-            <th>Role</th>
+            <th>Participant no.</th>
+            <th>Guest</th>
+            <th>College</th>
+            <th>Ticket type</th>
             <th>Mobile</th>
             <th>Fee</th>
             <th>Status</th>
@@ -715,7 +729,7 @@ $(function(){
       data: {
         labels: DASH.classLabels,
         datasets: [
-          { label: "Forms", data: DASH.classTotal, backgroundColor: "rgba(13,59,140,.18)", borderRadius: 4, maxBarThickness: 22 },
+          { label: "Registrations", data: DASH.classTotal, backgroundColor: "rgba(13,59,140,.18)", borderRadius: 4, maxBarThickness: 22 },
           { label: "Paid", data: DASH.classPaid, backgroundColor: colors.blue, borderRadius: 4, maxBarThickness: 22 }
         ]
       },
@@ -727,7 +741,7 @@ $(function(){
     data: {
       labels: DASH.trendLabels,
       datasets: [
-        { label: "Forms", data: DASH.trendTotal, backgroundColor: "rgba(13,59,140,.18)", borderRadius: 4, maxBarThickness: 18 },
+        { label: "Registrations", data: DASH.trendTotal, backgroundColor: "rgba(13,59,140,.18)", borderRadius: 4, maxBarThickness: 18 },
         { label: "Paid", data: DASH.trendPaid, backgroundColor: colors.blue, borderRadius: 4, maxBarThickness: 18 }
       ]
     },
@@ -738,7 +752,7 @@ $(function(){
     data: {
       labels: DASH.monthLabels,
       datasets: [
-        { label: "Forms", data: DASH.monthCnt, backgroundColor: colors.blue, borderRadius: 6, maxBarThickness: 22 },
+        { label: "Registrations", data: DASH.monthCnt, backgroundColor: colors.blue, borderRadius: 6, maxBarThickness: 22 },
         { label: "Paid", data: DASH.monthPaid, backgroundColor: colors.orange, borderRadius: 6, maxBarThickness: 22 }
       ]
     },
@@ -771,12 +785,13 @@ $(function(){
         d.size = $("select[name=size]").val();
         d.event = $("select[name=event]").val();
         d.q = $("input[name=q]").val();
+        d.college = $("select[name=college]").val() || "0";
         d.range = $("input[name=range]").val() || "all";
       },
       dataSrc: function(json){
         var cards = "";
         (json.data || []).forEach(function(row){
-          cards += "<div class=\\"app-card\\"><b>"+row[2]+"</b><div class=\\"app-meta\\">#"+row[1]+" · "+row[4]+" · "+row[5]+"<br>"+row[3]+" · "+row[6]+" · "+row[7]+"</div><div class=\\"actions\\" style=\\"margin-top:8px;\\">"+row[9]+"</div></div>";
+          cards += "<div class=\\"app-card\\"><b>"+row[2]+"</b><div class=\\"app-meta\\">"+row[1]+" · "+row[4]+" · "+row[5]+"<br>"+row[3]+" · "+row[6]+" · "+row[7]+"</div><div class=\\"actions\\" style=\\"margin-top:8px;\\">"+row[9]+"</div></div>";
         });
         document.getElementById("appCards").innerHTML = cards || "<p>No registrations found.</p>";
         return json.data;
