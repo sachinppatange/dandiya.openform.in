@@ -41,11 +41,11 @@ account_layout_start('My registrations', $user);
     <div class="muted">Fee ₹<?php echo number_format((float) $app['exam_fee'], 2); ?><?php echo !empty($app['coupon_code']) ? ' · Coupon ' . htmlspecialchars((string) $app['coupon_code']) : ''; ?> · <?php echo htmlspecialchars(date('d M Y', strtotime((string) $app['created_at']))); ?></div>
     <div class="actions" style="margin-top:10px;">
       <?php if ($paid): ?>
-        <a class="btn" href="my_profile.php?id=<?php echo (int) $app['id']; ?>">Open profile</a>
+        <a class="btn" href="icard.php?token=<?php echo urlencode((string) $app['receipt_token']); ?>">Ticket <?php echo htmlspecialchars($code); ?></a>
         <a class="btn gray" href="payment_success.php?token=<?php echo urlencode((string) $app['receipt_token']); ?>">Receipt</a>
       <?php else: ?>
         <a class="btn orange" href="index.php">Pay / continue</a>
-        <span class="muted" style="align-self:center;">Complete payment to get I-Card</span>
+        <span class="muted" style="align-self:center;">Complete payment to get your pass number and ticket</span>
       <?php endif; ?>
     </div>
   </div>

@@ -45,12 +45,12 @@ function app_settings_defaults(): array
         'zepto_send_method' => 'api',
         'zepto_send_mail_token' => '',
         'zepto_from_email' => 'noreply@openform.in',
-        'zepto_from_name' => 'HPLC Workshop',
+        'zepto_from_name' => 'SVSS Dandiya Night',
         'zepto_bounce_address' => '',
         'zepto_reply_to_email' => '',
         'otp_email_subject' => 'Your login OTP',
         'otp_email_html' => app_settings_default_email_html(),
-        'brand_name' => 'Latur College of Pharmacy, Hasegaon',
+        'brand_name' => 'SVSS Dandiya Night',
         'brand_tagline_admin' => 'Admin panel',
         'brand_tagline_staff' => 'Staff panel',
         'brand_logo_url' => '',
@@ -60,25 +60,25 @@ function app_settings_defaults(): array
         'razorpay_webhook_secret' => '',
         'razorpay_mode' => 'live',
         'payment_test_mode' => '0',
-        'exam_fee_1_4' => '5000',
-        'exam_fee_5_10' => '5000',
-        'exam_fee_flat' => '5000',
+        'exam_fee_1_4' => '300',
+        'exam_fee_5_10' => '300',
+        'exam_fee_flat' => '300',
         'platform_fee_percent' => '4',
         'platform_fee_payer' => 'user',
         'landing_enabled' => '1',
-        'landing_title' => 'Advanced HPLC Method Development & Validation',
-        'landing_subtitle' => 'Academia & Industry Workshop · 5-day masterclass: from theory to regulatory compliance',
-        'landing_about' => "Organised by the Professional Training Division, Latur College of Pharmacy, Hasegaon (SVSS Shri Vetaleshwar Shikshan Sanstha; NAAC B++).\nTrainer: Dr D. N. Wasmate (7+ years R&D, 6+ years academic experience).\nMorning theory (9:00 am–12:30 pm) and afternoon practical (1:30 pm–5:00 pm): instrumentation, QbD, gradient optimisation, stability-indicating methods, validation and troubleshooting.\nFee ₹5,000 includes expert instruction, course materials, certificate, case studies, lunch and refreshments. A seat is confirmed only after online payment — OTP login alone is not registration.",
-        'landing_who' => "Analytical chemists\nQC / QA analysts\nR&D scientists\nLab managers\nPharmacy faculty and PG / research students\nOne registration per participant",
-        'landing_dates' => "Dates: 28 September 2026 to 3 October 2026\nTheory: 9:00 am – 12:30 pm\nPractical: 1:30 pm – 5:00 pm\nDay 1 Instrumentation & theory · Day 2 Method scouting & QbD · Day 3 Gradient optimisation · Day 4 Stability-indicating methods · Day 5 Validation & troubleshooting",
-        'landing_how' => "Log in with your mobile number and SMS OTP\nFill name, organisation and role\nPay ₹5,000 through official Razorpay on this website and save the receipt\nCarry the receipt / pass on workshop days at Latur College of Pharmacy, Hasegaon",
-        'landing_need' => "Full name of the participant\nCollege / organisation name\nRole (M.Pharm, B.Pharm, faculty, researcher, scholar, or other)",
-        'landing_helpline' => "Email: register@laturpharmacyworkshops.com\nPhone / WhatsApp: +91 99750 40405\nLatur College of Pharmacy, Hasegaon, Gurunathappa Bawage Knowledge City, Tq. Ausa, Dist. Latur 413512",
+        'landing_title' => 'SVSS Dandiya Night',
+        'landing_subtitle' => 'Entry registration · Shri Vetaleshwar Shikshan Sanstha',
+        'landing_about' => "SVSS Dandiya Night is organised by Shri Vetaleshwar Shikshan Sanstha at Latur College of Pharmacy, Hasegaon.\nRegister with your name, college and ticket type, then pay online. A seat is confirmed only after successful payment.\nPaid guests receive a pass number and a digital entry ticket with QR. Show that ticket at the gate.",
+        'landing_who' => "Students\nFaculty and staff\nAlumni\nGuests\nOne registration and one entry ticket per person",
+        'landing_dates' => "17 Oct 2026, 6:00 pm\nEntry only with a paid digital ticket\nPass number is issued after payment",
+        'landing_how' => "Log in with your mobile number and SMS OTP\nFill your name, college and ticket type\nPay the entry fee through official Razorpay on this website\nOpen your pass number and ticket, and show the QR at the gate",
+        'landing_need' => "Full name of the guest\nCollege or organisation name\nTicket type (student, faculty / staff, alumni, or guest)",
+        'landing_helpline' => "Phone / WhatsApp: +91 99750 40405\nLatur College of Pharmacy, Hasegaon, Gurunathappa Bawage Knowledge City, Tq. Ausa, Dist. Latur 413512",
         'landing_poster_file' => '',
         'landing_poster_url' => '',
-        'landing_cta' => 'Register for the workshop',
+        'landing_cta' => 'Register for Dandiya Night',
         'landing_venue' => "Latur College of Pharmacy, Hasegaon\nLatur, Maharashtra",
-        'landing_highlights' => "5-day masterclass\nHands-on HPLC\nCertificate included\nFee ₹5,000",
+        'landing_highlights' => "SVSS Dandiya Night\nDigital entry ticket\nPass number after payment\nEntry fee ₹300",
         'landing_whatsapp' => '9975040405',
         'content_pack' => '',
         'event_group_url' => '',
@@ -103,7 +103,7 @@ function app_settings_secret_keys(): array
 
 function apply_workshop_content_pack(PDO $pdo): void
 {
-    $pack = 'hplc_masterclass_2026_v5';
+    $pack = 'svss_dandiya_night_v1';
     try {
         $stmt = $pdo->query("SELECT setting_value FROM app_settings WHERE setting_key = 'content_pack'");
         $current = (string) ($stmt ? $stmt->fetchColumn() : '');
@@ -132,6 +132,35 @@ function apply_workshop_content_pack(PDO $pdo): void
     }
 }
 
+function app_settings_repair_primary_key(PDO $pdo): void
+{
+    $idx = $pdo->query("SHOW INDEX FROM `app_settings` WHERE Key_name = 'PRIMARY'")->fetch(PDO::FETCH_ASSOC);
+    if ($idx) {
+        return;
+    }
+    $pdo->exec("
+        CREATE TABLE `app_settings_new` (
+          `setting_key` varchar(80) NOT NULL,
+          `setting_value` longtext DEFAULT NULL,
+          `updated_by` varchar(20) DEFAULT NULL,
+          `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`setting_key`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+    $pdo->exec("
+        INSERT INTO `app_settings_new` (`setting_key`, `setting_value`, `updated_by`, `updated_at`)
+        SELECT `setting_key`, `setting_value`, `updated_by`, `updated_at`
+          FROM (
+            SELECT `setting_key`, `setting_value`, `updated_by`, `updated_at`,
+                   ROW_NUMBER() OVER (PARTITION BY `setting_key` ORDER BY `updated_at` DESC) AS rn
+              FROM `app_settings`
+          ) ranked
+         WHERE rn = 1
+    ");
+    $pdo->exec("DROP TABLE `app_settings`");
+    $pdo->exec("RENAME TABLE `app_settings_new` TO `app_settings`");
+}
+
 function ensure_app_settings_schema(): void
 {
     static $done = false;
@@ -150,6 +179,7 @@ function ensure_app_settings_schema(): void
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             COMMENT='Admin panel OTP / SMS / email settings'
         ");
+        app_settings_repair_primary_key($pdo);
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS `notification_logs` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -605,7 +635,7 @@ function help_whatsapp_url(string $prefill = ''): string
         return '';
     }
     $url = 'https://wa.me/91' . $n;
-    $msg = $prefill !== '' ? $prefill : 'Hello, I need help with HPLC workshop registration.';
+    $msg = $prefill !== '' ? $prefill : 'Hello, I need help with SVSS Dandiya Night registration.';
     return $url . '?text=' . rawurlencode($msg);
 }
 

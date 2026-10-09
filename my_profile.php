@@ -41,7 +41,7 @@ $token = (string) ($app['receipt_token'] ?? '');
 $paid = ($app['payment_status'] ?? '') === 'paid' && $token !== '';
 $checkins = event_checkins_for((int) $app['id']);
 $stations = event_stations();
-$attended = isset($checkins['attendance']);
+$attended = isset($checkins['entry']);
 $s = get_app_settings();
 $group = trim((string) ($s['event_group_url'] ?? ''));
 $photos = trim((string) ($s['event_photos_url'] ?? ''));
@@ -71,10 +71,10 @@ account_layout_start($fullName, $user);
 </div>
 
 <div class="card">
-  <h2>I-Card photo</h2>
+  <h2>Profile photo</h2>
   <?php if ($photoMsg): ?><p class="muted" style="color:#1a7f4c;"><?php echo htmlspecialchars($photoMsg); ?></p><?php endif; ?>
   <?php if ($photoErr): ?><p class="help"><?php echo htmlspecialchars($photoErr); ?></p><?php endif; ?>
-  <p class="muted">Upload a clear face photo so the Digital I-Card looks complete. JPG or PNG, max 3 MB.</p>
+  <p class="muted">Optional face photo. JPG or PNG, max 3 MB.</p>
   <form method="post" enctype="multipart/form-data">
     <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required style="width:100%;margin:8px 0;">
     <button class="btn block" type="submit" name="upload_photo" value="1"><?php echo $photoSrc ? 'Change photo' : 'Upload photo'; ?></button>
@@ -85,20 +85,21 @@ account_layout_start($fullName, $user);
 <div class="card">
   <h2>Downloads</h2>
   <div class="actions">
-    <a class="btn" href="icard.php?token=<?php echo urlencode($token); ?>">Digital I-Card</a>
+    <a class="btn" href="icard.php?token=<?php echo urlencode($token); ?>">Entry ticket <?php echo htmlspecialchars($code); ?></a>
     <a class="btn gray" href="<?php echo htmlspecialchars($qrImg); ?>" download="qr-<?php echo htmlspecialchars($code); ?>.png" target="_blank">QR Code</a>
   </div>
   <a class="btn block gray" href="payment_success.php?token=<?php echo urlencode($token); ?>">Payment receipt</a>
   <?php if ($attended): ?>
     <a class="btn block green" href="certificate.php?token=<?php echo urlencode($token); ?>">E-Certificate</a>
   <?php else: ?>
-    <p class="help" style="margin-top:10px;">E-Certificate will unlock after attendance is marked on event day.</p>
+    <p class="help" style="margin-top:10px;">This opens after entry is marked at the gate.</p>
   <?php endif; ?>
 </div>
 
 <div class="card">
   <h2>Event day</h2>
-  <?php foreach (['kit' => 'Kit / T-shirt', 'breakfast' => 'Breakfast', 'attendance' => 'Attendance', 'feedback' => 'Feedback', 'icard' => 'I-Card check'] as $key => $lab):
+  <?php foreach (event_stations() as $key => $stMeta):
+      $lab = (string) ($stMeta['label'] ?? $key);
       $done = isset($checkins[$key]);
       $when = $done ? date('d M, h:i A', strtotime((string) $checkins[$key]['checked_in_at'])) : '';
   ?>
@@ -113,7 +114,7 @@ account_layout_start($fullName, $user);
 </div>
 <?php else: ?>
 <div class="card">
-  <p class="help">This form is not paid yet. I-Card, QR and certificate open after successful payment.</p>
+  <p class="help">This form is not paid yet. Your pass number and ticket open after successful payment.</p>
   <a class="btn block orange" href="index.php">Go to form / payment</a>
 </div>
 <?php endif; ?>

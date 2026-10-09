@@ -46,12 +46,10 @@ function form_class_options(): array
 {
     return [
         'academia' => [
-            'm_pharm' => 'M.Pharm Students',
-            'b_pharm' => 'B.Pharm Students',
-            'faculty' => 'Faculty Members',
-            'academic_researcher' => 'Academic Researchers',
-            'research_scholar' => 'Research Scholars',
-            'other' => 'Other',
+            'student' => 'Student',
+            'faculty' => 'Faculty / Staff',
+            'alumni' => 'Alumni',
+            'guest' => 'Guest',
         ],
     ];
 }
@@ -113,12 +111,25 @@ function form_event_dates(): array
 
 function form_workshop_start_date(): string
 {
-    return '2026-09-28';
+    return '2026-10-17';
 }
 
 function form_workshop_period_label(): string
 {
-    return '28 September – 3 October 2026';
+    $dates = function_exists('get_app_setting') ? trim((string) get_app_setting('landing_dates', '')) : '';
+    if ($dates !== '') {
+        $first = strtok($dates, "\r\n");
+        if (is_string($first) && trim($first) !== '') {
+            return trim($first);
+        }
+    }
+    return '17 October 2026 · 6:00 pm onwards';
+}
+
+function form_event_venue_label(): string
+{
+    $venue = function_exists('get_app_setting') ? trim((string) get_app_setting('landing_venue', '')) : '';
+    return $venue !== '' ? $venue : "Latur College of Pharmacy, Hasegaon";
 }
 
 function form_event_date_label(?string $ymd): string
@@ -215,7 +226,7 @@ function set_tshirt_size_status(int $id, string $status): bool
 function form_fee_breakdown(?array $coupon = null): array
 {
     $s = function_exists('get_app_settings') ? get_app_settings() : [];
-    $base = max(1, (int) ($s['exam_fee_flat'] ?? 5000));
+    $base = max(1, (int) ($s['exam_fee_flat'] ?? 300));
     if ($coupon && isset($coupon['fee_amount'])) {
         $base = max(1, (int) round((float) $coupon['fee_amount']));
     }
@@ -276,5 +287,5 @@ function form_fee_absorbed_by_admin(?array $app): bool
 
 function form_institution_label(string $type): string
 {
-    return 'Academia';
+    return 'College';
 }

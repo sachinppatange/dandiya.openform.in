@@ -5,16 +5,16 @@
 
 function legal_default_checkbox_text(): string
 {
-    return 'I have read the workshop details, declaration and rules. I confirm that the information is true, and I voluntarily accept these terms.';
+    return 'I have read the event details, declaration and rules. I confirm that the information is true, and I voluntarily accept these terms.';
 }
 
 function legal_default_declaration_html(): string
 {
     return <<<'HTML'
-<h4 id="declaration">Participant Declaration</h4>
-<p>I register as a participant in the Academia &amp; Industry Workshop on Advanced HPLC Method Development &amp; Validation, organised by Latur College of Pharmacy, Hasegaon, through this official website.</p>
-<p>I understand that the programme includes theory and practical laboratory sessions from 28 September to 3 October 2026, and that a seat is confirmed only after successful payment of the published fee.</p>
-<p>I will follow laboratory safety instructions and the organiser’s rules. I confirm that the information in this form is true. I accept that the organiser may change schedule or venue when reasonably necessary and will communicate through this website, registered mobile, or email.</p>
+<h4 id="declaration">Guest Declaration</h4>
+<p>I register as a guest for SVSS Dandiya Night, organised by Shri Vetaleshwar Shikshan Sanstha at Latur College of Pharmacy, Hasegaon, through this official website.</p>
+<p>I understand that entry is confirmed only after successful payment of the published fee, and that a pass number and digital ticket are issued only for a paid registration.</p>
+<p>I will follow the organiser’s entry, safety and conduct rules. I confirm that the information in this form is true. I accept that the organiser may change the schedule or venue when reasonably necessary and will communicate through this website, registered mobile, or email.</p>
 <p>By selecting the acceptance checkbox and submitting this form, I give my informed consent and treat this electronic acceptance as my formal declaration.</p>
 HTML;
 }
@@ -23,19 +23,19 @@ function legal_default_terms_html(): string
 {
     return <<<'HTML'
 <h4 id="terms">Rules — Terms and Conditions</h4>
-<p>These terms apply to participants in the HPLC workshop organised by Latur College of Pharmacy, Hasegaon (“the Organiser”).</p>
+<p>These terms apply to guests registering for SVSS Dandiya Night organised by Shri Vetaleshwar Shikshan Sanstha (“the Organiser”).</p>
 <ol>
-    <li><b>Voluntary participation.</b> Registration is voluntary. You confirm that you are authorised to submit this application.</li>
-    <li><b>Accuracy.</b> Provide complete and correct information. The Organiser may cancel registration or a certificate if details are false or misleading.</li>
-    <li><b>Fees.</b> The published registration fee and any gateway fee shown on this website apply at the time of payment. A seat is confirmed only after successful payment.</li>
-    <li><b>Payment.</b> Pay only through the official Razorpay facility on this website. Keep your receipt. The Organiser is not responsible for payments to unofficial accounts or links.</li>
-    <li><b>Fee inclusions.</b> The fee includes instruction, course materials, certificate, case studies, and lunch as published on this website. Travel and stay are the participant’s responsibility unless stated otherwise.</li>
-    <li><b>Venue and schedule.</b> Sessions run at Latur College of Pharmacy, Hasegaon, from 28 September to 3 October 2026, unless officially changed. The Organiser may change venue or timings when reasonably necessary.</li>
-    <li><b>Laboratory conduct.</b> Follow trainer and staff instructions, safety rules, and dress requirements for practical sessions. Misconduct may lead to removal without refund.</li>
-    <li><b>Communication.</b> Keep your mobile and email correct and check official messages. Missing a message is not ordinarily a reason for a special session or refund.</li>
+    <li><b>Voluntary registration.</b> Registration is voluntary. You confirm that you are authorised to submit this form.</li>
+    <li><b>Accuracy.</b> Provide complete and correct information. The Organiser may cancel a pass if details are false or misleading.</li>
+    <li><b>Fees.</b> The published entry fee and any gateway fee shown on this website apply at the time of payment. A pass is confirmed only after successful payment.</li>
+    <li><b>Payment.</b> Pay only through the official Razorpay facility on this website. Keep your receipt and ticket. The Organiser is not responsible for payments to unofficial accounts or links.</li>
+    <li><b>Pass and ticket.</b> After payment, this website issues a pass number and a digital entry ticket with a QR code. One paid registration is one entry. The ticket is not transferable unless the Organiser says otherwise.</li>
+    <li><b>Entry.</b> Carry the digital ticket or its QR at the gate. Entry can be refused without a valid paid ticket, or if the same ticket has already been used.</li>
+    <li><b>Venue and schedule.</b> The event is at the venue and time published on this website, unless officially changed. The Organiser may change venue or timings when reasonably necessary.</li>
+    <li><b>Conduct.</b> Follow staff instructions and event rules. Misconduct may lead to removal without refund.</li>
+    <li><b>Communication.</b> Keep your mobile number correct and check official messages.</li>
     <li><b>Postponement.</b> The Organiser may postpone, relocate, or cancel due to circumstances beyond reasonable control. Any change will be communicated through this website, SMS, WhatsApp, or email.</li>
     <li><b>Refunds.</b> Fees are handled according to the Organiser’s published refund policy. No refund is ordinarily payable for absence, false information, or rule violation.</li>
-    <li><b>Certificates.</b> Certificates are issued for eligible participants who complete the workshop as announced by the Organiser.</li>
     <li><b>Governing law.</b> These terms are governed by the laws of India. Disputes are subject to courts of competent jurisdiction in Maharashtra.</li>
     <li><b>Electronic acceptance.</b> Selecting the checkbox and submitting the form is your valid consent and declaration.</li>
 </ol>

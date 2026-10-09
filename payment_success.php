@@ -8,6 +8,7 @@ if (!function_exists('landing_page_title')) {
     require_once __DIR__ . '/includes/app_settings.php';
 }
 require_once __DIR__ . '/includes/event_stations.php';
+require_once __DIR__ . '/includes/ticket_card.php';
 
 // ✅ Check if PDO connection exists
 if (!isset($pdo) || !($pdo instanceof PDO)) {
@@ -63,7 +64,7 @@ $application_id = $application['id'];
 
 // Generate Receipt Number
 $receipt_no = public_receipt_prefix() . '/2026/' . str_pad($application_id, 5, '0', STR_PAD_LEFT);
-$application_code = 'AGS' . str_pad($application_id, 5, '0', STR_PAD_LEFT);
+$application_code = event_application_code((int) $application_id);
 
 // Format date
 $created_date = new DateTime($application['created_at']);
@@ -640,31 +641,12 @@ body {
             <p class="status-text"><?= $payment_status ?></p>
         </div>
 
-        <div class="pass-qr-block">
-            <div>
-                <img src="<?= htmlspecialchars($qrImg) ?>" alt="Registration QR" width="150" height="150">
-                <div id="receiptQrJs" style="display:none;"></div>
-            </div>
-            <div>
-                <h3><i class="fas fa-qrcode"></i> Digital I-Card QR</h3>
-                <p style="font-size:0.85rem;margin:0 0 8px;">Scan this code for the full registration pass. Use it for:</p>
-                <ul>
-                    <li>Digital I-Card</li>
-                    <li>QR Code (gate)</li>
-                    <li>Kit Distribution</li>
-                    <li>Breakfast</li>
-                    <li>Feedback</li>
-                    <li>E-Certificate</li>
-                    <li>Attendance</li>
-                </ul>
-                <p style="margin:8px 0 0;"><a href="<?= htmlspecialchars($passUrl) ?>">Open digital I-Card / pass</a></p>
-            </div>
-        </div>
+        <?php event_ticket_render($application, true); ?>
 
         <!-- Receipt Information -->
         <div class="receipt-info">
             <div class="info-row">
-                <span class="info-label">Application ID:</span>
+                <span class="info-label">Pass number:</span>
                 <span class="info-value"><?= htmlspecialchars($application_code) ?></span>
             </div>
             <div class="info-row">
@@ -682,18 +664,18 @@ body {
         </div>
 
         <!-- Student Details -->
-        <div class="section-title"><i class="fas fa-user-graduate"></i> Student Details</div>
+        <div class="section-title"><i class="fas fa-user"></i> Guest details</div>
         <div class="detail-box">
             <div class="detail-item">
-                <span class="detail-label">Student Name:</span>
+                <span class="detail-label">Name:</span>
                 <span class="detail-value"><strong><?= htmlspecialchars($fullName) ?></strong></span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Class:</span>
+                <span class="detail-label">Ticket type:</span>
                 <span class="detail-value"><?= htmlspecialchars($classLabel) ?></span>
             </div>
             <div class="detail-item">
-                <span class="detail-label"><?= htmlspecialchars($instLabel) ?> Name:</span>
+                <span class="detail-label">College:</span>
                 <span class="detail-value"><?= htmlspecialchars($application['school_name']) ?></span>
             </div>
         </div>
@@ -764,10 +746,10 @@ body {
         <div class="note-box">
             <strong style="font-size:0.9rem;"><i class="fas fa-info-circle"></i> Important Note:</strong>
             <ul>
-                <li>✔ Application submitted successfully</li>
+                <li>✔ Registration submitted successfully</li>
                 <li>✔ Payment received and verified</li>
-                <li>✔ Exam details will be sent via SMS/Email</li>
-                <li>✔ Keep this receipt for future reference</li>
+                <li>✔ Pass number <?= htmlspecialchars($application_code) ?> is your entry pass</li>
+                <li>✔ Show this ticket QR at the gate</li>
             </ul>
         </div>
         <?php require __DIR__ . '/includes/legal_terms_html.php'; ?>
@@ -778,7 +760,7 @@ body {
                 <i class="fas fa-id-card"></i> My profile
             </a>
             <a href="icard.php?token=<?= urlencode((string) $token) ?>" class="btn btn-success">
-                <i class="fas fa-download"></i> I-Card
+                <i class="fas fa-ticket-alt"></i> Ticket
             </a>
             <a href="my_registrations.php" class="btn btn-secondary">
                 <i class="fas fa-list"></i> All my forms

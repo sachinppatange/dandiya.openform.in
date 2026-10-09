@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/event_stations.php';
+require_once __DIR__ . '/includes/ticket_card.php';
 if (!function_exists('form_class_label')) {
     require_once __DIR__ . '/includes/form_catalog.php';
 }
@@ -61,7 +62,7 @@ $stations = event_stations();
 $profile = event_application_profile($app);
 $logoSrc = function_exists('panel_logo_src') ? panel_logo_src('') : '';
 $photoSrc = function_exists('icard_photo_src') ? icard_photo_src($app) : '';
-$loginHint = $operator ? '' : 'Staff / admin login is required to mark kit, breakfast, attendance and other stations.';
+$loginHint = $operator ? '' : 'Staff / admin login is required to mark entry, wristband and dinner.';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -124,28 +125,14 @@ button,a.btn{border:0;border-radius:9px;padding:8px 12px;font-weight:800;font-fa
   <?php if ($msg): ?><div class="flash"><?php echo htmlspecialchars($msg); ?></div><?php endif; ?>
   <?php if ($err): ?><div class="err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
 
+  <?php event_ticket_render($app, false); ?>
+
   <div class="card">
-    <div class="icard-top">
-      <?php if ($logoSrc !== ''): ?>
-      <img src="<?php echo htmlspecialchars($logoSrc); ?>" alt="">
-      <?php endif; ?>
-      <div>
-        <small>Digital I-Card</small>
-        <b><?php echo htmlspecialchars($fullName); ?></b>
-        <span><?php echo htmlspecialchars($code); ?> · Paid</span>
-      </div>
-      <?php if ($photoSrc): ?>
-        <img class="face" src="<?php echo htmlspecialchars($photoSrc); ?>" alt="">
-      <?php endif; ?>
-    </div>
     <div class="body">
-      <div class="qrbox">
-        <div id="passQr"></div>
-        <p class="hint">Scan for Digital I-Card, kit, breakfast, attendance, feedback and e-certificate</p>
-      </div>
       <div class="meta">
-        <div><span>Role</span><b><?php echo htmlspecialchars($classLabel); ?></b></div>
-        <div><span><?php echo htmlspecialchars($instLabel); ?></span><b><?php echo htmlspecialchars((string) $app['school_name']); ?></b></div>
+        <div><span>Pass number</span><b><?php echo htmlspecialchars($code); ?></b></div>
+        <div><span>Ticket type</span><b><?php echo htmlspecialchars($classLabel); ?></b></div>
+        <div><span>College</span><b><?php echo htmlspecialchars((string) $app['school_name']); ?></b></div>
         <div><span>Mobile</span><b><?php echo htmlspecialchars((string) ($app['mobile'] ?: '—')); ?></b></div>
       </div>
       <?php foreach ($profile as $group => $rows): ?>
@@ -207,14 +194,5 @@ button,a.btn{border:0;border-radius:9px;padding:8px 12px;font-weight:800;font-fa
     </div>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-new QRCode(document.getElementById('passQr'), {
-  text: <?php echo json_encode($passUrl); ?>,
-  width: 168,
-  height: 168,
-  correctLevel: QRCode.CorrectLevel.M
-});
-</script>
 </body>
 </html>

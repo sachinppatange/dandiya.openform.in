@@ -59,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_application'])
     
     if (empty($first_name)) $errors[] = "First Name is required";
     if (empty($last_name)) $errors[] = "Last Name is required";
-    if (empty($class)) $errors[] = "Role is required";
-    if (empty($school_name)) $errors[] = "Organisation name is required";
+    if (empty($class)) $errors[] = "Ticket type is required";
+    if (empty($school_name)) $errors[] = "College / organisation is required";
     if (!preg_match('/^\d{10}$/', $mobile)) $errors[] = "Valid 10-digit Mobile Number is required";
     
     if (empty($errors)) {
@@ -403,7 +403,7 @@ function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
                     </div>
                     
                     <div class="form-group">
-                        <label>Role <span class="required">*</span></label>
+                        <label>Ticket type <span class="required">*</span></label>
                         <select name="class" required>
                             <option value="">Select role</option>
                             <?php
@@ -425,7 +425,7 @@ function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
                 <div class="section-title">Organisation</div>
                 <div class="form-grid">
                     <div class="form-group full-width">
-                        <label>Organisation Name <span class="required">*</span></label>
+                        <label>College / organisation <span class="required">*</span></label>
                         <input type="hidden" name="institution_type" value="academia">
                         <input type="text" name="school_name" value="<?php echo h($app['school_name']); ?>" placeholder="Organisation Name / College / University name" required>
                     </div>

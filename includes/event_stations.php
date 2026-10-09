@@ -36,13 +36,9 @@ function ensure_event_stations_schema(): void
 function event_stations(): array
 {
     return [
-        'icard' => ['label' => 'Digital I-Card', 'hint' => 'Show / verify identity'],
-        'qr' => ['label' => 'QR Code', 'hint' => 'Gate / first scan'],
-        'kit' => ['label' => 'Kit / materials', 'hint' => 'Course kit given'],
-        'breakfast' => ['label' => 'Lunch', 'hint' => 'Meal served'],
-        'feedback' => ['label' => 'Feedback', 'hint' => 'Feedback collected'],
-        'ecert' => ['label' => 'E-Certificate', 'hint' => 'Certificate issued'],
-        'attendance' => ['label' => 'Attendance', 'hint' => 'Present at workshop'],
+        'entry' => ['label' => 'Entry gate', 'hint' => 'Scan the ticket at the gate'],
+        'wristband' => ['label' => 'Wristband', 'hint' => 'Entry band given'],
+        'dinner' => ['label' => 'Dinner', 'hint' => 'Meal served'],
     ];
 }
 
@@ -116,7 +112,7 @@ function event_pass_url(string $token): string
 
 function event_application_code(int $id): string
 {
-    return 'AGS' . str_pad((string) $id, 5, '0', STR_PAD_LEFT);
+    return 'SVSS-DN-' . str_pad((string) max(0, $id), 5, '0', STR_PAD_LEFT);
 }
 
 function event_display_value($value): string
@@ -145,7 +141,8 @@ function event_parse_scan_query(string $q): array
         $token = $q;
     }
     $codeId = 0;
-    if (preg_match('/^AGS?0*([0-9]+)$/i', $q, $m)) {
+    $compact = strtoupper(str_replace([' ', '_'], '', $q));
+    if (preg_match('/^(?:AGS|SVSS-?DN-?)0*([0-9]+)$/i', $compact, $m)) {
         $codeId = (int) $m[1];
     } elseif (ctype_digit($q) && strlen($q) <= 8) {
         $codeId = (int) $q;
@@ -207,8 +204,8 @@ function event_application_profile(array $app): array
         'Gender' => event_display_value($app['gender'] ?? ''),
     ];
     $institution = [
-        'Organisation Name' => event_display_value($app['school_name'] ?? ''),
-        'Role' => event_display_value($classLabel),
+        'College / organisation' => event_display_value($app['school_name'] ?? ''),
+        'Ticket type' => event_display_value($classLabel),
     ];
     $contact = [
         'Mobile' => !empty($app['mobile']) ? '+91 ' . $app['mobile'] : '—',
@@ -225,10 +222,10 @@ function event_application_profile(array $app): array
         'Submitted by staff' => event_display_value($staffName !== '' ? $staffName : ($app['submitted_by_phone'] ?? '')),
         'Coupon' => event_display_value($app['coupon_code'] ?? ''),
     ];
-    $institution = array_filter($institution, static fn($v, $k) => $v !== '—' || in_array($k, ['Organisation Name', 'Role'], true), ARRAY_FILTER_USE_BOTH);
+    $institution = array_filter($institution, static fn($v, $k) => $v !== '—' || in_array($k, ['College / organisation', 'Ticket type'], true), ARRAY_FILTER_USE_BOTH);
     return [
-        'Participant' => $student,
-        'Workshop' => $institution,
+        'Guest' => $student,
+        'Ticket' => $institution,
         'Contact' => $contact,
         'Payment' => $payment,
     ];
@@ -241,9 +238,9 @@ function event_full_name(array $app): string
 
 function event_desk_filters(array $src): array
 {
-    $station = (string) ($src['station'] ?? 'attendance');
+    $station = (string) ($src['station'] ?? 'entry');
     if (!isset(event_stations()[$station])) {
-        $station = 'attendance';
+        $station = 'entry';
     }
     $view = (string) ($src['view'] ?? 'remaining');
     if (!in_array($view, ['remaining', 'today', 'done'], true)) {

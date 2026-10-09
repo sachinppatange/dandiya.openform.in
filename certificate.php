@@ -16,8 +16,8 @@ if (!$app) {
 }
 ensure_event_stations_schema();
 $checkins = event_checkins_for((int) $app['id']);
-if (empty($checkins['attendance'])) {
-    echo '<p style="font-family:sans-serif;padding:32px;text-align:center;">E-Certificate is available after attendance is marked on event day.</p>';
+if (empty($checkins['entry'])) {
+    echo '<p style="font-family:sans-serif;padding:32px;text-align:center;">This opens after entry is marked at the gate.</p>';
     exit;
 }
 $fullName = trim($app['first_name'].' '.$app['middle_name'].' '.$app['last_name']);
@@ -25,7 +25,7 @@ $code = event_application_code((int) $app['id']);
 $title = landing_page_title();
 $logo = panel_logo_src('');
 $classLabel = form_class_label((string) ($app['class'] ?? ''));
-$when = date('d F Y', strtotime((string) $checkins['attendance']['checked_in_at']));
+$when = date('d F Y', strtotime((string) $checkins['entry']['checked_in_at']));
 ?>
 <!DOCTYPE html>
 <html lang="en">

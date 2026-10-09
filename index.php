@@ -143,11 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     }
 
     if (empty($school_name) || strlen($school_name) < 3) {
-        $errors[] = "Organisation name is required";
+        $errors[] = "College / organisation is required";
     }
 
     if (!form_valid_class($institution_type, $class)) {
-        $errors[] = "Please select a valid role / designation";
+        $errors[] = "Please select a ticket type";
     }
 
     if (empty($mobile) || !preg_match('/^[6-9][0-9]{9}$/', $mobile)) {
@@ -872,7 +872,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         
                         <!-- Student Details -->
                         <div class="detail-group">
-                            <div class="detail-group-title">👤 Participant details</div>
+                            <div class="detail-group-title">👤 Guest details</div>
                             
                             <div class="detail-row">
                                 <div class="detail-label">Full Name:</div>
@@ -880,12 +880,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                             </div>
                             
                             <div class="detail-row">
-                                <div class="detail-label">Organisation Name:</div>
+                                <div class="detail-label">College / organisation:</div>
                                 <div class="detail-value"><?php echo htmlspecialchars($applicationData['school_name']); ?></div>
                             </div>
                             
                             <div class="detail-row">
-                                <div class="detail-label">Role:</div>
+                                <div class="detail-label">Ticket type:</div>
                                 <div class="detail-value"><?php echo htmlspecialchars($applicationData['class_label']); ?></div>
                             </div>
                         </div>
@@ -994,7 +994,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                 "amount": "<?php echo (int) round((float) $applicationData['exam_fee'] * 100); ?>",
                 "currency": "INR",
                 "name": <?php echo json_encode($landingTitle, JSON_UNESCAPED_UNICODE); ?>,
-                "description": <?php echo json_encode(($landingSubtitle !== '' ? $landingSubtitle . ' · ' : '') . 'Class ' . ($applicationData['class_label'] ?? $applicationData['class']), JSON_UNESCAPED_UNICODE); ?>,
+                "description": <?php echo json_encode(($landingSubtitle !== '' ? $landingSubtitle . ' · ' : '') . 'Ticket ' . ($applicationData['class_label'] ?? $applicationData['class']), JSON_UNESCAPED_UNICODE); ?>,
                 "order_id": "<?php echo $applicationData['razorpay_order_id']; ?>",
                 "handler": function (response) {
                     var form = document.createElement('form');
@@ -1079,7 +1079,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         <input type="hidden" name="staff_id" value="<?php echo (int) $lockedStaff['id']; ?>">
                         <?php endif; ?>
 
-                        <div class="section-title">👤 Student Details</div>
+                        <div class="section-title">👤 Guest details</div>
                         
                         <div class="row mb-3">
                             <div class="col-md-4">
@@ -1097,15 +1097,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['razorpay_payment_id']
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Organisation Name <span class="text-danger">*</span></label>
+                            <label class="form-label">College / organisation <span class="text-danger">*</span></label>
                             <input type="hidden" name="institution_type" value="academia">
-                            <input type="text" name="school_name" id="institutionName" class="form-control" placeholder="Organisation Name / College / University name" value="<?php echo htmlspecialchars($applicationData['school_name'] ?? ''); ?>" required minlength="3" maxlength="200">
+                            <input type="text" name="school_name" id="institutionName" class="form-control" placeholder="College or organisation name" value="<?php echo htmlspecialchars($applicationData['school_name'] ?? ''); ?>" required minlength="3" maxlength="200">
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Role <span class="text-danger">*</span></label>
+                            <label class="form-label">Ticket type <span class="text-danger">*</span></label>
                             <select name="class" id="classSelect" class="form-select" required>
-                                <option value="">-- Select role --</option>
+                                <option value="">-- Select ticket type --</option>
                                 <?php foreach (form_classes_for('academia') as $ck => $cl): ?>
                                 <option value="<?php echo htmlspecialchars($ck); ?>" <?php echo (($applicationData['class'] ?? '') === $ck) ? 'selected' : ''; ?>><?php echo htmlspecialchars($cl); ?></option>
                                 <?php endforeach; ?>

@@ -129,11 +129,11 @@ if ($otp_active && !empty($ctx['last_sent_at'])) {
     $cooldownRemaining = max(0, OTP_RESEND_COOLDOWN - (time() - (int) $ctx['last_sent_at']));
 }
 
-$page_title = 'Participant Login';
-$page_heading = 'Participant Login';
+$page_title = function_exists('landing_page_title') ? landing_page_title() : 'SVSS Dandiya Night';
+$page_heading = $page_title;
 $page_sub = $lockedStaff
     ? 'Form via ' . $lockedStaff['name'] . '. Enter mobile number for SMS OTP.'
-    : 'Enter your mobile number to receive SMS OTP and open the form';
+    : 'Enter your mobile number to register. Your pass number and ticket open after payment.';
 $phone_label = 'Mobile number*';
 $note_text = 'First login creates your profile. Username = mobile, password = SMS OTP.';
 $show_program_info = false;

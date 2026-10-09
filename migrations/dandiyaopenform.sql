@@ -575,6 +575,16 @@ ALTER TABLE `staff`
 --
 ALTER TABLE `students`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+
+-- SVSS Dandiya Night content (applied on import; the site also refreshes these from the content pack)
+UPDATE `app_settings` SET `setting_value` = 'SVSS Dandiya Night', `updated_by` = 'system' WHERE `setting_key` IN ('brand_name', 'landing_title', 'zepto_from_name');
+UPDATE `app_settings` SET `setting_value` = 'Entry registration · Shri Vetaleshwar Shikshan Sanstha', `updated_by` = 'system' WHERE `setting_key` = 'landing_subtitle';
+UPDATE `app_settings` SET `setting_value` = '300', `updated_by` = 'system' WHERE `setting_key` IN ('exam_fee_flat', 'exam_fee_1_4', 'exam_fee_5_10');
+UPDATE `app_settings` SET `setting_value` = 'Register for Dandiya Night', `updated_by` = 'system' WHERE `setting_key` = 'landing_cta';
+UPDATE `app_settings` SET `setting_value` = 'SVSS Dandiya Night\nDigital entry ticket\nPass number after payment\nEntry fee ₹300', `updated_by` = 'system' WHERE `setting_key` = 'landing_highlights';
+UPDATE `app_settings` SET `setting_value` = '17 Oct 2026, 6:00 pm\nEntry only with a paid digital ticket\nPass number is issued after payment', `updated_by` = 'system' WHERE `setting_key` = 'landing_dates';
+UPDATE `app_settings` SET `setting_value` = 'svss_dandiya_night_v1', `updated_by` = 'system' WHERE `setting_key` = 'content_pack';
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
