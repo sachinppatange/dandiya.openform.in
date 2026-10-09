@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-head"><h3>Scan registration QR</h3></div>
-  <p class="hint-block">Point the camera at the ticket QR, or type the pass number / mobile. The paid ticket opens below so you can mark entry, wristband and dinner.</p>
+  <p class="hint-block">Point the camera at the ticket QR, or type the pass number / mobile. The paid ticket opens below so you can mark entry and wristband.</p>
   <?php if ($scanMsg): ?><div class="msg info"><?php echo htmlspecialchars($scanMsg); ?></div><?php endif; ?>
   <?php if ($scanError): ?><div class="msg error"><?php echo htmlspecialchars($scanError); ?></div><?php endif; ?>
   <form method="get" class="filters" style="margin-bottom:14px;">

@@ -38,7 +38,6 @@ function event_stations(): array
     return [
         'entry' => ['label' => 'Entry gate', 'hint' => 'Scan the ticket at the gate'],
         'wristband' => ['label' => 'Wristband', 'hint' => 'Entry band given'],
-        'dinner' => ['label' => 'Dinner', 'hint' => 'Meal served'],
     ];
 }
 

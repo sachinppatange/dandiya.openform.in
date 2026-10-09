@@ -62,7 +62,7 @@ $stations = event_stations();
 $profile = event_application_profile($app);
 $logoSrc = function_exists('panel_logo_src') ? panel_logo_src('') : '';
 $photoSrc = function_exists('icard_photo_src') ? icard_photo_src($app) : '';
-$loginHint = $operator ? '' : 'Staff / admin login is required to mark entry, wristband and dinner.';
+$loginHint = $operator ? '' : 'Staff / admin login is required to mark entry and wristband.';
 ?>
 <!DOCTYPE html>
 <html lang="en">
